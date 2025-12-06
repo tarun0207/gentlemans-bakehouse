@@ -641,6 +641,18 @@
 
         document.getElementById('overlay').addEventListener('click', toggleCart);
 
+        // Mobile Menu Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            const nav = document.querySelector('nav');
+
+            if (menuBtn) {
+                menuBtn.addEventListener('click', () => {
+                    nav.classList.toggle('active');
+                });
+            }
+        });
+
         function updateQuantity(name, price, change) {
             const existingItem = cart.find(item => item.name === name);
 
