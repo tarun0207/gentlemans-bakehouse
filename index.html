@@ -15,47 +15,8 @@
         rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Styles -->
-    <link rel="stylesheet" href="css/style.css">
-</head>
-
-<body>
-
-    <div class="overlay" id="overlay"></div>
-
-    <!-- Header -->
-    <header>
-        <div class="logo">
-            <img src="./assets/logo.jpg" alt="Gentleman's Bakehouse Logo Bengaluru">
-            <span>Gentleman's Bakehouse</span>
-        </div>
-
-        <nav>
-            <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#cookies">Cookies</a></li>
-                <li><a href="about.html">About us</a></li>
-                <li><a href="#gallery">Gallery</a></li>
-                <li><a href="#reviews">Reviews</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
-
-        <div style="display: flex; align-items: center; gap: 1rem;">
-            <div class="cart-btn-wrapper" onclick="toggleCart()">
-                <i class="fas fa-shopping-bag" style="font-size: 1.5rem;"></i>
-                <span class="cart-count" id="cartCount">0</span>
-            </div>
-            <button class="mobile-menu-btn"><i class="fas fa-bars"></i></button>
-        </div>
-    </header>
-
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-        <h1>Premium Handmade Cookies, Crafted with Care & Loved by All.</h1>
-        <p>Freshly baked in Bengaluru using premium ingredients.</p>
-        <a href="#cookies" class="btn btn-primary"
-            style="background-color: #c08b5c; font-size: 1.2rem; padding: 1.2rem 3rem;">Order Now on WhatsApp</a>
+    <a href="#cookies" class="btn btn-primary"
+        style="background-color: #c08b5c; font-size: 1.2rem; padding: 1.2rem 3rem;">Order Now on WhatsApp</a>
     </section>
 
     <!-- Products Section -->
@@ -466,6 +427,6 @@
             window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
         }
     </script>
-</body>
+    </body>
 
 </html>
