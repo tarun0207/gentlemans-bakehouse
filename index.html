@@ -494,293 +494,45 @@
 
         .feature-item {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            width: 180px;
-        }
+            </button></div><div class="cart-items" id="cartItems">< !-- Items injected here JS --><p style="text-align:center; color:#888; margin-top:2rem;">Your cart is empty.</p></div><div class="cart-footer"><div class="total"><span>Total: </span> <span id="cartTotal" >₹0.00</span> </div> <button class="btn-checkout" onclick="checkoutWhatsApp()" > <i class="fab fa-whatsapp" ></i> Order on WhatsApp </button> </div> </div> < !-- Footer --> <footer id="contact" > <div class="footer-content" > <div class="logo" > <img src="./assets/logo.jpg" alt="Gentleman's Bakehouse" > </div> <div class="social-links" > <a href="#" ><i class="fab fa-instagram" ></i></a> <a href="#" ><i class="fab fa-facebook" ></i></a> <a href="#" ><i class="fab fa-whatsapp" ></i></a> </div> </div> <p class="copyright" >&copy;
+            2024 Gentleman's Bakehouse.</p>
+ </footer><script> // Shopping Cart Logic
+            let cart=[]; // Array of {name, price, qty}
 
-        .feature-icon {
-            font-size: 2rem;
-            color: var(--accent-color);
-            background: #fff;
-            width: 70px;
-            height: 70px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            margin-bottom: 1rem;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(216, 162, 94, 0.2);
-        }
-
-        .feature-item p {
-            font-weight: 600;
-            line-height: 1.3;
-            color: var(--primary-color);
-        }
-
-        @media (max-width: 768px) {
-            .cart-sidebar {
-                width: 85%;
+            function toggleCart() {
+                document.getElementById('cartSidebar').classList.toggle('active');
+                document.getElementById('overlay').classList.toggle('active');
             }
 
-            nav ul {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                width: 100%;
-                background-color: var(--card-bg);
-                flex-direction: column;
-                padding: 1rem;
-                gap: 1rem;
-                text-align: center;
-                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-            }
+            document.getElementById('overlay').addEventListener('click', toggleCart);
 
-            nav.active ul {
-                display: flex;
-            }
+            // Mobile Menu Logic
+            document.addEventListener('DOMContentLoaded', ()=> {
+                    const menuBtn=document.querySelector('.mobile-menu-btn');
+                    const nav=document.querySelector('nav');
 
-            .mobile-menu-btn {
-                display: block;
-            }
-
-            .logo {
-                font-size: 1rem;
-            }
-
-            .logo img {
-                height: 50px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-    <div class="overlay" id="overlay"></div>
-
-    <!-- Header -->
-    <header>
-        <div class="logo">
-            <img src="./assets/logo.jpg" alt="Gentleman's Bakehouse">
-            <span>Gentleman's Bakehouse</span>
-        </div>
-
-        <nav>
-            <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#cookies">Cookies</a></li>
-                <li><a href="#about">Our Story</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
-
-        <div style="display: flex; align-items: center; gap: 1rem;">
-            <div class="cart-btn-wrapper" onclick="toggleCart()">
-                <i class="fas fa-shopping-bag" style="font-size: 1.5rem;"></i>
-                <span class="cart-count" id="cartCount">0</span>
-            </div>
-            <button class="mobile-menu-btn"><i class="fas fa-bars"></i></button>
-        </div>
-    </header>
-
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-        <h1>Premium Handmade Cookies, Crafted with Care & Loved by All.</h1>
-        <p>Freshly baked in Bengaluru using premium ingredients.</p>
-        <a href="#cookies" class="btn btn-primary"
-            style="background-color: #c08b5c; font-size: 1.2rem; padding: 1.2rem 3rem;">Order Now on WhatsApp</a>
-    </section>
-
-    <!-- Products Section -->
-    <section id="cookies">
-        <h2 class="section-title">Our Cookie Collection</h2>
-        <div class="menu-grid">
-            <!-- Product 1 -->
-            <div class="menu-item">
-                <img src="./assets/cookie_hero.png" alt="Classic Choc Chip" class="menu-img">
-                <div class="menu-details">
-                    <div class="menu-header">
-                        <h3>Classic Choc Chip</h3>
-                        <span class="price">₹250</span>
-                    </div>
-                    <p class="description">Thick, chewy, and loaded with semi-sweet chocolate chunks. A timeless
-                        favorite.</p>
-                    <div class="action-area" id="action-Classic Choc Chip">
-                        <button class="btn-add" onclick="updateQuantity('Classic Choc Chip', 250, 1)">
-                            <i class="fas fa-plus"></i> Add to Cart
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 2 -->
-            <div class="menu-item">
-                <img src="./assets/cookie_hero.png" alt="Double Fudge" class="menu-img">
-                <div class="menu-details">
-                    <div class="menu-header">
-                        <h3>Double Fudge</h3>
-                        <span class="price">₹300</span>
-                    </div>
-                    <p class="description">Rich cocoa dough with white and dark chocolate chips. For the true
-                        chocoholic.</p>
-                    <div class="action-area" id="action-Double Fudge">
-                        <button class="btn-add" onclick="updateQuantity('Double Fudge', 300, 1)">
-                            <i class="fas fa-plus"></i> Add to Cart
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 3 -->
-            <div class="menu-item">
-                <img src="./assets/cookie_hero.png" alt="White Choc Macadamia" class="menu-img">
-                <div class="menu-details">
-                    <div class="menu-header">
-                        <h3>White Choc Macadamia</h3>
-                        <span class="price">₹350</span>
-                    </div>
-                    <p class="description">Buttery vanilla dough with roasted macadamia nuts and creamy white chocolate.
-                    </p>
-                    <div class="action-area" id="action-White Choc Macadamia">
-                        <button class="btn-add" onclick="updateQuantity('White Choc Macadamia', 350, 1)">
-                            <i class="fas fa-plus"></i> Add to Cart
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 4 -->
-            <div class="menu-item">
-                <img src="./assets/cookie_hero.png" alt="Oatmeal Raisin Spice" class="menu-img">
-                <div class="menu-details">
-                    <div class="menu-header">
-                        <h3>Oatmeal Raisin Spice</h3>
-                        <span class="price">₹250</span>
-                    </div>
-                    <p class="description">Hearty oats, plump raisins, and a hint of cinnamon. Comfort in a cookie.</p>
-                    <div class="action-area" id="action-Oatmeal Raisin Spice">
-                        <button class="btn-add" onclick="updateQuantity('Oatmeal Raisin Spice', 250, 1)">
-                            <i class="fas fa-plus"></i> Add to Cart
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    </section>
-
-    <!-- Why Choose Us -->
-    <section id="why-choose" style="background-color: rgba(255,255,255,0.5);">
-        <h2 class="section-title">Why Choose Gentleman’s Bakehouse?</h2>
-        <p class="features-tagline">Better ingredients. Better cookies. Baked just for you.</p>
-
-        <div class="feature-grid">
-            <div class="feature-item">
-                <div class="feature-icon"><i class="fas fa-hand-holding-heart"></i></div>
-                <p>Handmade in <br>Small Batches</p>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon"><i class="fas fa-crown"></i></div>
-                <p>Real Butter & <br>Premium Chocolate</p>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon"><i class="fas fa-clock"></i></div>
-                <p>Freshly Baked <br>Daily</p>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon"><i class="fas fa-check-circle"></i></div>
-                <p>Baked Only <br>On Order</p>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon"><i class="fas fa-leaf"></i></div>
-                <p>No Preservatives</p>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon"><i class="fas fa-house"></i></div>
-                <p>Hygienic <br>Home Bakery</p>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon"><i class="fas fa-gift"></i></div>
-                <p>Gift-Ready <br>Packaging</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Cart Sidebar -->
-    <div class="cart-sidebar" id="cartSidebar">
-        <div class="cart-header">
-            <h3>Your Cart</h3>
-            <button class="close-cart" onclick="toggleCart()">&times;</button>
-        </div>
-        <div class="cart-items" id="cartItems">
-            <!-- Items injected here JS -->
-            <p style="text-align:center; color:#888; margin-top:2rem;">Your cart is empty.</p>
-        </div>
-        <div class="cart-footer">
-            <div class="total">
-                <span>Total:</span>
-                <span id="cartTotal">₹0.00</span>
-            </div>
-            <button class="btn-checkout" onclick="checkoutWhatsApp()">
-                <i class="fab fa-whatsapp"></i> Order on WhatsApp
-            </button>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <footer id="contact">
-        <div class="footer-content">
-            <div class="logo">
-                <img src="./assets/logo.jpg" alt="Gentleman's Bakehouse">
-            </div>
-            <div class="social-links">
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-facebook"></i></a>
-                <a href="#"><i class="fab fa-whatsapp"></i></a>
-            </div>
-        </div>
-        <p class="copyright">&copy; 2024 Gentleman's Bakehouse.</p>
-    </footer>
-
-    <script>
-        // Shopping Cart Logic
-        let cart = []; // Array of {name, price, qty}
-
-        function toggleCart() {
-            document.getElementById('cartSidebar').classList.toggle('active');
-            document.getElementById('overlay').classList.toggle('active');
-        }
-
-        document.getElementById('overlay').addEventListener('click', toggleCart);
-
-        // Mobile Menu Logic
-        document.addEventListener('DOMContentLoaded', () => {
-            const menuBtn = document.querySelector('.mobile-menu-btn');
-            const nav = document.querySelector('nav');
-
-            if (menuBtn) {
-                menuBtn.addEventListener('click', () => {
-                    nav.classList.toggle('active');
+                    if (menuBtn) {
+                        menuBtn.addEventListener('click', ()=> {
+                                nav.classList.toggle('active');
+                            });
+                    }
                 });
-            }
-        });
 
-        function updateQuantity(name, price, change) {
-            const existingItem = cart.find(item => item.name === name);
+            function updateQuantity(name, price, change) {
+                const existingItem=cart.find(item=> item.name===name);
 
-            if (existingItem) {
-                existingItem.qty += change;
-                if (existingItem.qty <= 0) {
-                    cart = cart.filter(item => item.name !== name);
+                if (existingItem) {
+                    existingItem.qty+=change;
+
+                    if (existingItem.qty <=0) {
+                        cart=cart.filter(item=> item.name !==name);
+                    }
                 }
-            } else if (change > 0) {
-                cart.push({ name, price, qty: 1 });
+
+                else if (change > 0) {
+                    cart.push({
+                        name, price, qty: 1
+                    });
             }
 
             updateUI();
@@ -797,101 +549,123 @@
         }
 
         function updateCatalogUI() {
-            const products = [
-                'Classic Choc Chip',
-                'Double Fudge',
-                'White Choc Macadamia',
-                'Oatmeal Raisin Spice'
+            const products=[ 'Classic Choc Chip',
+            'Double Fudge',
+            'White Choc Macadamia',
+            'Oatmeal Raisin Spice'
             ];
 
-            products.forEach(name => {
-                const container = document.getElementById(`action-${name}`);
-                const item = cart.find(i => i.name === name);
+            products.forEach(name=> {
+                    const container=document.getElementById(`action-$ {
+                            name
+                        }
 
-                if (item) {
-                    // Show Counter
-                    container.innerHTML = `
-                        <div class="qty-control-catalog">
-                            <button onclick="updateQuantity('${name}', ${item.price}, -1)">-</button>
-                            <span>${item.qty}</span>
-                            <button onclick="updateQuantity('${name}', ${item.price}, 1)">+</button>
-                        </div>
-                    `;
-                } else {
-                    // Show Add Button
-                    let price = 250;
-                    if (name === 'Double Fudge') price = 300;
-                    if (name === 'White Choc Macadamia') price = 350;
+                        `);
+                    const item=cart.find(i=> i.name===name);
 
-                    container.innerHTML = `
-                        <button class="btn-add" onclick="updateQuantity('${name}', ${price}, 1)">
-                            <i class="fas fa-plus"></i> Add to Cart
-                        </button>
-                    `;
-                }
-            });
+                    if (item) {
+
+                        // Show Counter
+                        container.innerHTML=` <div class="qty-control-catalog" > <button onclick="updateQuantity('${name}', ${item.price}, -1)" >-</button> <span>$ {
+                            item.qty
+                        }
+
+                        </span> <button onclick="updateQuantity('${name}', ${item.price}, 1)" >+</button> </div> `;
+                    }
+
+                    else {
+                        // Show Add Button
+                        let price=250;
+                        if (name==='Double Fudge') price=300;
+                        if (name==='White Choc Macadamia') price=350;
+
+                        container.innerHTML=` <button class="btn-add" onclick="updateQuantity('${name}', ${price}, 1)" > <i class="fas fa-plus" ></i> Add to Cart </button> `;
+                    }
+                });
         }
 
         function updateCartUI() {
-            const itemsContainer = document.getElementById('cartItems');
-            const countSpan = document.getElementById('cartCount');
-            const totalSpan = document.getElementById('cartTotal');
+            const itemsContainer=document.getElementById('cartItems');
+            const countSpan=document.getElementById('cartCount');
+            const totalSpan=document.getElementById('cartTotal');
 
             // Update Count
-            const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
-            countSpan.textContent = totalQty;
+            const totalQty=cart.reduce((sum, item)=> sum + item.qty, 0);
+            countSpan.textContent=totalQty;
 
             // Render Items
-            itemsContainer.innerHTML = '';
-            let total = 0;
+            itemsContainer.innerHTML='';
+            let total=0;
 
-            if (cart.length === 0) {
-                itemsContainer.innerHTML = '<p style="text-align:center; color:#888; margin-top:2rem;">Your cart is empty.</p>';
-            } else {
-                cart.forEach((item) => {
-                    total += item.price * item.qty;
-                    const itemEl = document.createElement('div');
-                    itemEl.classList.add('cart-item');
-                    itemEl.innerHTML = `
-                        <div class="item-info">
-                            <h4>${item.name}</h4>
-                            <span class="item-price">₹${item.price} x ${item.qty}</span>
-                        </div>
-                        <div class="qty-control-cart">
-                            <button onclick="updateQuantity('${item.name}', ${item.price}, -1)">-</button>
-                            <span>${item.qty}</span>
-                            <button onclick="updateQuantity('${item.name}', ${item.price}, 1)">+</button>
-                        </div>
-                    `;
-                    itemsContainer.appendChild(itemEl);
-                });
+            if (cart.length===0) {
+                itemsContainer.innerHTML='<p style="text-align:center; color:#888; margin-top:2rem;">Your cart is empty.</p>';
+            }
+
+            else {
+                cart.forEach((item)=> {
+                        total +=item.price * item.qty;
+                        const itemEl=document.createElement('div');
+                        itemEl.classList.add('cart-item');
+
+                        itemEl.innerHTML=` <div class="item-info" > <h4>$ {
+                            item.name
+                        }
+
+                        </h4> <span class="item-price" >₹$ {
+                            item.price
+                        }
+
+                        x $ {
+                            item.qty
+                        }
+
+                        </span> </div> <div class="qty-control-cart" > <button onclick="updateQuantity('${item.name}', ${item.price}, -1)" >-</button> <span>$ {
+                            item.qty
+                        }
+
+                        </span> <button onclick="updateQuantity('${item.name}', ${item.price}, 1)" >+</button> </div> `;
+                        itemsContainer.appendChild(itemEl);
+                    });
             }
 
             // Update Total
-            totalSpan.textContent = '₹' + total.toFixed(2);
+            totalSpan.textContent='₹'+total.toFixed(2);
         }
 
         function checkoutWhatsApp() {
-            if (cart.length === 0) {
+            if (cart.length===0) {
                 alert("Your cart is empty!");
                 return;
             }
 
-            const phoneNumber = "918105487345";
-            let message = "Hello! I'd like to place an order:%0A%0A"; // %0A is newline
-            let total = 0;
+            const phoneNumber="918105487345";
+            let message="Hello! I'd like to place an order:%0A%0A"; // %0A is newline
+            let total=0;
 
-            cart.forEach(item => {
-                const itemTotal = item.price * item.qty;
-                message += `${item.qty} x ${item.name} (₹${itemTotal})%0A`;
-                total += itemTotal;
-            });
+            cart.forEach(item=> {
+                    const itemTotal=item.price * item.qty;
 
-            message += `%0A*Total: ₹${total.toFixed(2)}*`;
+                    message +=`$ {
+                        item.qty
+                    }
 
-            window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
-        }
-    </script>
-</body>
+                    x $ {
+                        item.name
+                    }
 
-</html>
+                    (₹$ {
+                            itemTotal
+                        })%0A`;
+                    total +=itemTotal;
+                });
+
+            message+=`%0A*Total: ₹$ {
+                total.toFixed(2)
+            }
+
+            *`;
+
+            window.open(`https: //wa.me/${phoneNumber}?text=${message}`, '_blank');
+            }
+
+            </script> </body> </html>
