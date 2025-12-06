@@ -515,7 +515,8 @@ footer {
     gap: 10px;
 }
 
-color: var(--accent-color);
+.delivery-list li i {
+    color: var(--accent-color);
 }
 
 /* Packaging Section */
