@@ -169,24 +169,38 @@
     </section>
 
     <!-- Cart Sidebar -->
-    <div class="cart-sidebar" id="cartSidebar">
-        <div class="cart-header">
-            <h3>Your Cart</h3>
-            <button class="close-cart" onclick="toggleCart()">&times;</button>
+    </section>
+
+    <!-- Delivery Information -->
+    <section class="delivery-section">
+        <h2 class="section-title">Available for delivery across Bengaluru.</h2>
+        <ul class="delivery-list">
+            <li><i class="fas fa-check-circle"></i> Freshly baked only after order</li>
+            <li><i class="fas fa-shield-alt"></i> Secure cookie protection packing</li>
+            <li><i class="fas fa-shipping-fast"></i> Delivery within 48 hours</li>
+        </ul>
+        <a href="#cookies" class="btn btn-primary" style="margin-top: 1rem; display: inline-block;">Order Now on
+            WhatsApp</a>
+    </section>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-header">
+        <h3>Your Cart</h3>
+        <button class="close-cart" onclick="toggleCart()">&times;</button>
+    </div>
+    <div class="cart-items" id="cartItems">
+        <!-- Items injected via JS -->
+        <p style="text-align:center; color:#888; margin-top:2rem;">Your cart is empty.</p>
+    </div>
+    <div class="cart-footer">
+        <div class="total">
+            <span>Total:</span>
+            <span id="cartTotal">₹0.00</span>
         </div>
-        <div class="cart-items" id="cartItems">
-            <!-- Items injected via JS -->
-            <p style="text-align:center; color:#888; margin-top:2rem;">Your cart is empty.</p>
-        </div>
-        <div class="cart-footer">
-            <div class="total">
-                <span>Total:</span>
-                <span id="cartTotal">₹0.00</span>
-            </div>
-            <button class="btn-checkout" onclick="checkoutWhatsApp()">
-                <i class="fab fa-whatsapp"></i> Order on WhatsApp
-            </button>
-        </div>
+        <button class="btn-checkout" onclick="checkoutWhatsApp()">
+            <i class="fab fa-whatsapp"></i> Order on WhatsApp
+        </button>
+    </div>
     </div>
 
     <!-- Footer -->
