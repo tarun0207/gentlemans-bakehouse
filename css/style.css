@@ -515,8 +515,63 @@ footer {
     gap: 10px;
 }
 
-.delivery-list li i {
-    color: var(--accent-color);
+color: var(--accent-color);
+}
+
+/* Packaging Section */
+.packaging-section {
+    background-color: var(--bg-color);
+    /* Cream background */
+    text-align: center;
+}
+
+.packaging-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.pack-card {
+    background: #fff;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+    padding-bottom: 1.5rem;
+}
+
+.pack-card:hover {
+    transform: translateY(-5px);
+}
+
+.pack-img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-bottom: 3px solid var(--accent-color);
+}
+
+.pack-label {
+    display: inline-block;
+    background-color: var(--accent-color);
+    color: white;
+    padding: 0.5rem 1.2rem;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-top: -1.2rem;
+    /* Overlap effect */
+    position: relative;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.pack-text {
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--primary-color);
 }
 
 @media (max-width: 768px) {
