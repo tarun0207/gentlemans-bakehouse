@@ -249,6 +249,56 @@
         <i class="fab fa-whatsapp" style="font-size: 1.2rem;"></i> Order on WhatsApp
     </a>
 
+    <!-- Corporate & Bulk Orders -->
+    <section id="corporate" class="corporate-section">
+        <div class="corporate-container">
+            <div class="corporate-content">
+                <span class="corporate-tagline">Your events deserve better than boring snacks</span>
+                <h2>Corporate & Bulk Orders</h2>
+                <p class="sub-headline">Baking Happiness — One Office at a Time!</p>
+                <p>Planning a team celebration, client gifts, festive treats or monthly snack day? We offer customized
+                    bulk orders with special pricing and branded packaging for corporate needs.</p>
+                <p>Let’s create something memorable for your team ✨</p>
+
+                <ul class="corporate-features">
+                    <li><i class="fas fa-gift"></i> Custom gift boxes</li>
+                    <li><i class="fas fa-tags"></i> Bulk quantity discounts</li>
+                    <li><i class="fas fa-stamp"></i> Personalized branding options</li>
+                </ul>
+            </div>
+
+            <div class="corporate-form-card">
+                <h3>Plan Your Order</h3>
+                <form id="corporateForm" onsubmit="submitCorporateInquiry(event)">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="c_name" required placeholder="Your Name">
+                    </div>
+                    <div class="form-group">
+                        <label>Company Name</label>
+                        <input type="text" id="c_company" required placeholder="Company Name">
+                    </div>
+                    <div class="form-group">
+                        <label>Event Type</label>
+                        <select id="c_event">
+                            <option value="Team Celebration">Team Celebration</option>
+                            <option value="Client Gifts">Client Gifts</option>
+                            <option value="Festive Treats">Festive Treats</option>
+                            <option value="Monthly Snacks">Monthly Snacks</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Estimated Quantity</label>
+                        <input type="number" id="c_qty" placeholder="e.g. 50 boxes">
+                    </div>
+                    <button type="submit" class="btn-corporate">Plan My Corporate Order</button>
+                    <p class="form-note">P.S. We love large celebrations 🍪😄</p>
+                </form>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer id="contact">
         <div class="footer-content">
@@ -394,6 +444,24 @@
             });
 
             message += `%0A*Total: ₹${total.toFixed(2)}*`;
+
+            window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+        }
+
+        function submitCorporateInquiry(e) {
+            e.preventDefault();
+            const name = document.getElementById('c_name').value;
+            const company = document.getElementById('c_company').value;
+            const event = document.getElementById('c_event').value;
+            const qty = document.getElementById('c_qty').value;
+
+            const phoneNumber = "918105487345";
+            let message = `*Corporate Inquiry* %0A%0A`;
+            message += `Name: ${name}%0A`;
+            message += `Company: ${company}%0A`;
+            message += `Event: ${event}%0A`;
+            message += `Est. Quantity: ${qty}%0A`;
+            message += `%0AHello! I'd like to plan a corporate order.`;
 
             window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
         }
