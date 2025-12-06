@@ -150,279 +150,386 @@
             </div>
             <div class="feature-item">
                 <div class="feature-icon"><i class="fas fa-crown"></i></div>
+                <p>Real Butter & <br>Premium Chocolate</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fas fa-clock"></i></div>
+                <p>Freshly Baked <br>Daily</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fas fa-check-circle"></i></div>
+                <p>Baked Only <br>On Order</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fas fa-leaf"></i></div>
+                <p>No Preservatives</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fas fa-house"></i></div>
+                <p>Hygienic <br>Home Bakery</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon"><i class="fas fa-gift"></i></div>
+                <p>Gift-Ready <br>Packaging</p>
+            </div>
+        </div>
+    </section>
 
-                <!-- Delivery Information -->
-                <section class="delivery-section">
-                    <h2 class="section-title">Available for delivery across Bengaluru.</h2>
-                    <ul class="delivery-list">
-                        <li><i class="fas fa-check-circle"></i> Freshly baked only after order</li>
-                        <li><i class="fas fa-shield-alt"></i> Secure cookie protection packing</li>
-                        <li><i class="fas fa-shipping-fast"></i> Delivery within 48 hours</li>
-                    </ul>
-                    <a href="#cookies" class="btn btn-primary" style="margin-top: 1rem; display: inline-block;">Order
-                        Now on
-                        WhatsApp</a>
-                </section>
+    <!-- Delivery Information -->
+    <section class="delivery-section">
+        <h2 class="section-title">Available for delivery across Bengaluru.</h2>
+        <ul class="delivery-list">
+            <li><i class="fas fa-check-circle"></i> Freshly baked only after order</li>
+            <li><i class="fas fa-shield-alt"></i> Secure cookie protection packing</li>
+            <li><i class="fas fa-shipping-fast"></i> Delivery within 48 hours</li>
+        </ul>
+        <a href="#cookies" class="btn btn-primary" style="margin-top: 1rem; display: inline-block;">Order Now on
+            WhatsApp</a>
+    </section>
 
-                <!-- Gift Packaging -->
-                <section class="packaging-section">
-                    <h2 class="section-title">Premium Gift-Ready Packaging</h2>
-                    <div class="packaging-grid">
-                        <!-- Card 1 -->
-                        <div class="pack-card">
-                            <img src="./assets/cookie_hero.png" alt="Celebration Gift Box Cookies Bengaluru"
-                                class="pack-img">
-                            <span class="pack-label">Celebrations</span>
-                            <p class="pack-text">Perfect for Celebrations</p>
-                        </div>
-                        <!-- Card 2 -->
-                        <div class="pack-card">
-                            <img src="./assets/cookie_hero.png" alt="Gifting Cookie Box Bengaluru" class="pack-img">
-                            <span class="pack-label">Gifting</span>
-                            <p class="pack-text">Great for Gifting</p>
-                        </div>
-                        <!-- Card 3 -->
-                        <div class="pack-card">
-                            <img src="./assets/cookie_hero.png" alt="Safe Delivery Cookies Bengaluru" class="pack-img">
-                            <span class="pack-label">Delivery</span>
-                            <p class="pack-text">Safe for Delivery</p>
-                        </div>
+    <!-- Gift Packaging -->
+    <section class="packaging-section">
+        <h2 class="section-title">Premium Gift-Ready Packaging</h2>
+        <div class="packaging-grid">
+            <!-- Card 1 -->
+            <div class="pack-card">
+                <img src="./assets/cookie_hero.png" alt="Celebration Gift Box Cookies Bengaluru" class="pack-img">
+                <span class="pack-label">Celebrations</span>
+                <p class="pack-text">Perfect for Celebrations</p>
+            </div>
+            <!-- Card 2 -->
+            <div class="pack-card">
+                <img src="./assets/cookie_hero.png" alt="Gifting Cookie Box Bengaluru" class="pack-img">
+                <span class="pack-label">Gifting</span>
+                <p class="pack-text">Great for Gifting</p>
+            </div>
+            <!-- Card 3 -->
+            <div class="pack-card">
+                <img src="./assets/cookie_hero.png" alt="Safe Delivery Cookies Bengaluru" class="pack-img">
+                <span class="pack-label">Delivery</span>
+                <p class="pack-text">Safe for Delivery</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Placeholder -->
+    <section id="gallery" style="background-color: var(--card-bg);">
+        <h2 class="section-title">Gallery</h2>
+        <p style="text-align:center;">Our latest creations coming soon.</p>
+    </section>
+
+    <!-- Reviews Placeholder -->
+    <section id="reviews">
+        <h2 class="section-title">Customer Reviews</h2>
+        <p style="text-align:center;">See what our customers are saying.</p>
+    </section>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Your Cart</h3>
+            <button class="close-cart" onclick="toggleCart()">&times;</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Items injected via JS -->
+            <p style="text-align:center; color:#888; margin-top:2rem;">Your cart is empty.</p>
+        </div>
+        <div class="cart-footer">
+            <div class="total">
+                <span>Total:</span>
+                <span id="cartTotal">₹0.00</span>
+            </div>
+            <button class="btn-checkout" onclick="checkoutWhatsApp()">
+                <i class="fab fa-whatsapp"></i> Order on WhatsApp
+            </button>
+        </div>
+    </div>
+
+    <!-- Floating Button -->
+    <a href="#cookies" class="floating-btn">
+        <i class="fab fa-whatsapp" style="font-size: 1.2rem;"></i> Order on WhatsApp
+    </a>
+
+    <!-- Corporate & Bulk Orders -->
+    <section id="corporate" class="corporate-section">
+        <div class="corporate-container">
+            <div class="corporate-content">
+                <span class="corporate-tagline">Your events deserve better than boring snacks</span>
+                <h2>Corporate & Bulk Orders</h2>
+                <p class="sub-headline">Baking Happiness — One Office at a Time!</p>
+                <p>Planning a team celebration, client gifts, festive treats or monthly snack day? We offer customized
+                    bulk orders with special pricing and branded packaging for corporate needs.</p>
+                <p>Let’s create something memorable for your team ✨</p>
+
+                <ul class="corporate-features">
+                    <li><i class="fas fa-gift"></i> Custom gift boxes</li>
+                    <li><i class="fas fa-tags"></i> Bulk quantity discounts</li>
+                    <li><i class="fas fa-stamp"></i> Personalized branding options</li>
+                </ul>
+            </div>
+
+            <div class="corporate-form-card">
+                <h3>Plan Your Order</h3>
+                <form id="corporateForm" onsubmit="submitCorporateInquiry(event)">
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="c_name" required placeholder="Your Name">
                     </div>
-                </section>
-
-                <!-- Gallery Placeholder -->
-                <section id="gallery" style="background-color: var(--card-bg);">
-                    <h2 class="section-title">Gallery</h2>
-                    <p style="text-align:center;">Our latest creations coming soon.</p>
-                </section>
-
-                <!-- Reviews Placeholder -->
-                <section id="reviews">
-                    <h2 class="section-title">Customer Reviews</h2>
-                    <p style="text-align:center;">See what our customers are saying.</p>
-                </section>
-
-                <!-- Cart Sidebar -->
-                <div class="cart-sidebar" id="cartSidebar">
-                    <div class="cart-header">
-                        <h3>Your Cart</h3>
-                        <button class="close-cart" onclick="toggleCart()">&times;</button>
+                    <div class="form-group">
+                        <label>Company Name</label>
+                        <input type="text" id="c_company" required placeholder="Company Name">
                     </div>
-                    <div class="cart-items" id="cartItems">
-                        <!-- Items injected via JS -->
-                        <p style="text-align:center; color:#888; margin-top:2rem;">Your cart is empty.</p>
+                    <div class="form-group">
+                        <label>Event Type</label>
+                        <select id="c_event">
+                            <option value="Team Celebration">Team Celebration</option>
+                            <option value="Client Gifts">Client Gifts</option>
+                            <option value="Festive Treats">Festive Treats</option>
+                            <option value="Monthly Snacks">Monthly Snacks</option>
+                            <option value="Other">Other</option>
+                        </select>
                     </div>
-                    <div class="cart-footer">
-                        <div class="total">
-                            <span>Total:</span>
-                            <span id="cartTotal">₹0.00</span>
-                        </div>
-                        <button class="btn-checkout" onclick="checkoutWhatsApp()">
-                            <i class="fab fa-whatsapp"></i> Order on WhatsApp
-                        </button>
+                    <div class="form-group">
+                        <label>Estimated Quantity</label>
+                        <input type="number" id="c_qty" placeholder="e.g. 50 boxes">
+                    </div>
+                    <button type="submit" class="btn-corporate">Plan My Corporate Order</button>
+                    <p class="form-note">P.S. We love large celebrations 🍪😄</p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="main-footer">
+        <div class="footer-grid">
+            <!-- Col 1: Brand -->
+            <div class="footer-col">
+                <div class="footer-logo">
+                    <img src="./assets/logo.jpg" alt="Gentleman's Bakehouse Logo">
+                    <span>Gentleman's <br>Bakehouse</span>
+                </div>
+                <p class="footer-tagline-v2">"Crafted with care, loved by all."</p>
+
+                <div class="trust-badges">
+                    <div class="trust-item">
+                        <i class="fas fa-cookie-bite"></i>
+                        <span>Freshly Baked</span>
+                    </div>
+                    <div class="trust-item">
+                        <i class="fas fa-leaf"></i>
+                        <span>No Preservatives</span>
+                    </div>
+                    <div class="trust-item">
+                        <i class="fas fa-star"></i>
+                        <span>Premium Ingredients</span>
+                    </div>
+                    <div class="trust-item">
+                        <i class="fas fa-gift"></i>
+                        <span>Gift Ready</span>
                     </div>
                 </div>
+            </div>
 
-                <!-- Floating Button -->
-                <a href="#cookies" class="floating-btn">
-                    <i class="fab fa-whatsapp" style="font-size: 1.2rem;"></i> Order on WhatsApp
-                </a>
+            <!-- Col 2: Quick Links -->
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#cookies">Menu</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="#gallery">Gallery</a></li>
+                    <li><a href="#reviews">Reviews</a></li>
+                    <li><a href="#corporate">Corporate Orders</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
 
-                <!-- Corporate & Bulk Orders -->
-                <section id="corporate" class="corporate-section">
-                    <div class="corporate-container">
-                        <div class="corporate-content">
-                            <span class="corporate-tagline">Your events deserve better than boring snacks</span>
-                            <h2>Corporate & Bulk Orders</h2>
-                            <p class="sub-headline">Baking Happiness — One Office at a Time!</p>
-                            <p>Planning a team celebration, client gifts, festive treats or monthly snack day? We offer
-                                customized
-                                bulk orders with special pricing and branded packaging for corporate needs.</p>
-                            <p>Let’s create something memorable for your team ✨</p>
+            <!-- Col 3: Contact -->
+            <div class="footer-col">
+                <h4>Contact Us</h4>
+                <div class="footer-contact-v2">
+                    <p><i class="fas fa-map-marker-alt"></i> Bengaluru, India</p>
+                    <p><i class="fab fa-whatsapp"></i> +91 81054 87345</p>
+                    <p><i class="fas fa-envelope"></i> hello@gentlemansbakehouse.com</p>
+                </div>
+                <div class="footer-socials">
+                    <a href="https://instagram.com" target="_blank" aria-label="Instagram"><i
+                            class="fab fa-instagram"></i></a>
+                    <a href="https://wa.me/918105487345" target="_blank" aria-label="WhatsApp"><i
+                            class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
 
-                            <ul class="corporate-features">
-                                <li><i class="fas fa-gift"></i> Custom gift boxes</li>
-                                <li><i class="fas fa-tags"></i> Bulk quantity discounts</li>
-                                <li><i class="fas fa-stamp"></i> Personalized branding options</li>
-                            </ul>
+            <!-- Col 4: Subscribe -->
+            <div class="footer-col">
+                <h4>Stay Sweet</h4>
+                <div class="newsletter-box">
+                    <p>Be the first to try new flavours 👀 <br>Subscribe for exclusive cookie drops.</p>
+                    <a href="https://wa.me/918105487345?text=Subscribe%20me%20to%20updates!" class="btn-small"
+                        target="_blank">Subscribe on WhatsApp</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2025 Gentleman’s Bakehouse. All Rights Reserved.</p>
+            <p class="hygiene-badge">Baked only on order • Hygienic home bakery</p>
+        </div>
+    </footer>
+
+    <script>
+        // Shopping Cart Logic
+        let cart = []; // Array of {name, price, qty}
+
+        function toggleCart() {
+            document.getElementById('cartSidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        document.getElementById('overlay').addEventListener('click', toggleCart);
+
+        // Mobile Menu Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            const nav = document.querySelector('nav');
+
+            if (menuBtn) {
+                menuBtn.addEventListener('click', () => {
+                    nav.classList.toggle('active');
+                });
+            }
+        });
+
+        function updateQuantity(name, price, change) {
+            const existingItem = cart.find(item => item.name === name);
+
+            if (existingItem) {
+                existingItem.qty += change;
+                if (existingItem.qty <= 0) {
+                    cart = cart.filter(item => item.name !== name);
+                }
+            } else if (change > 0) {
+                cart.push({ name, price, qty: 1 });
+            }
+
+            updateUI();
+        }
+
+        function updateUI() {
+            updateCartUI();
+            updateCatalogUI();
+        }
+
+        function updateCatalogUI() {
+            const products = ['Classic Choc Chip', 'Double Fudge', 'White Choc Macadamia', 'Oatmeal Raisin Spice'];
+
+            products.forEach(name => {
+                const container = document.getElementById(`action-${name}`);
+                const item = cart.find(i => i.name === name);
+
+                if (item) {
+                    // Show Counter
+                    container.innerHTML = `
+                        <div class="qty-control-catalog">
+                            <button onclick="updateQuantity('${name}', ${item.price}, -1)">-</button>
+                            <span>${item.qty}</span>
+                            <button onclick="updateQuantity('${name}', ${item.price}, 1)">+</button>
                         </div>
+                    `;
+                } else {
+                    // Show Add Button
+                    let price = 250;
+                    if (name === 'Double Fudge') price = 300;
+                    if (name === 'White Choc Macadamia') price = 350;
 
-                        <div class="corporate-form-card">
-                            <h3>Plan Your Order</h3>
-                            <form id="corporateForm" onsubmit="submitCorporateInquiry(event)">
-                                <div class="form-group">
-                                    <label>Name</label>
-                                    <input type="text" id="c_name" required placeholder="Your Name">
-                                </div>
-                                <div class="form-group">
-                                    <label>Company Name</label>
-                                    <input type="text" id="c_company" required placeholder="Company Name">
-                                </div>
-                                <div class="form-group">
-                                    <label>Event Type</label>
-                                    <select id="c_event">
-                                        <option value="Team Celebration">Team Celebration</option>
-                                        <option value="Client Gifts">Client Gifts</option>
-                                        <option value="Festive Treats">Festive Treats</option>
-                                        <option value="Monthly Snacks">Monthly Snacks</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Estimated Quantity</label>
-                                    <input type="number" id="c_qty" placeholder="e.g. 50 boxes">
-                                </div>
-                                <button type="submit" class="btn-corporate">Plan My Corporate Order</button>
-                                <p class="form-note">P.S. We love large celebrations 🍪😄</p>
-                            </form>
-                            document.getElementById('cartSidebar').classList.toggle('active');
-                            document.getElementById('overlay').classList.toggle('active');
-                            }
+                    container.innerHTML = `
+                        <button class="btn-add" onclick="updateQuantity('${name}', ${price}, 1)">
+                            <i class="fas fa-plus"></i> Add to Cart
+                        </button>
+                    `;
+                }
+            });
+        }
 
-                            document.getElementById('overlay').addEventListener('click', toggleCart);
+        function updateCartUI() {
+            const itemsContainer = document.getElementById('cartItems');
+            const countSpan = document.getElementById('cartCount');
+            const totalSpan = document.getElementById('cartTotal');
 
-                            // Mobile Menu Logic
-                            document.addEventListener('DOMContentLoaded', () => {
-                            const menuBtn = document.querySelector('.mobile-menu-btn');
-                            const nav = document.querySelector('nav');
+            // Update Count
+            const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+            countSpan.textContent = totalQty;
 
-                            if (menuBtn) {
-                            menuBtn.addEventListener('click', () => {
-                            nav.classList.toggle('active');
-                            });
-                            }
-                            });
+            // Render Items
+            itemsContainer.innerHTML = '';
+            let total = 0;
 
-                            function updateQuantity(name, price, change) {
-                            const existingItem = cart.find(item => item.name === name);
+            if (cart.length === 0) {
+                itemsContainer.innerHTML = '<p style="text-align:center; color:#888; margin-top:2rem;">Your cart is empty.</p>';
+            } else {
+                cart.forEach((item) => {
+                    total += item.price * item.qty;
+                    const itemEl = document.createElement('div');
+                    itemEl.classList.add('cart-item');
+                    itemEl.innerHTML = `
+                        <div class="item-info">
+                            <h4>${item.name}</h4>
+                            <span class="item-price">₹${item.price} x ${item.qty}</span>
+                        </div>
+                        <div class="qty-control-cart">
+                            <button onclick="updateQuantity('${item.name}', ${item.price}, -1)">-</button>
+                            <span>${item.qty}</span>
+                            <button onclick="updateQuantity('${item.name}', ${item.price}, 1)">+</button>
+                        </div>
+                    `;
+                    itemsContainer.appendChild(itemEl);
+                });
+            }
 
-                            if (existingItem) {
-                            existingItem.qty += change;
-                            if (existingItem.qty <= 0) { cart=cart.filter(item=> item.name !== name);
-                                }
-                                } else if (change > 0) {
-                                cart.push({ name, price, qty: 1 });
-                                }
+            // Update Total
+            totalSpan.textContent = '₹' + total.toFixed(2);
+        }
 
-                                updateUI();
-                                }
+        function checkoutWhatsApp() {
+            if (cart.length === 0) {
+                alert("Your cart is empty!");
+                return;
+            }
 
-                                function updateUI() {
-                                updateCartUI();
-                                updateCatalogUI();
-                                }
+            const phoneNumber = "918105487345";
+            let message = "Hello! I'd like to place an order:%0A%0A";
+            let total = 0;
 
-                                function updateCatalogUI() {
-                                const products = ['Classic Choc Chip', 'Double Fudge', 'White Choc Macadamia', 'Oatmeal
-                                Raisin Spice'];
+            cart.forEach(item => {
+                const itemTotal = item.price * item.qty;
+                message += `${item.qty} x ${item.name} (₹${itemTotal})%0A`;
+                total += itemTotal;
+            });
 
-                                products.forEach(name => {
-                                const container = document.getElementById(`action-${name}`);
-                                const item = cart.find(i => i.name === name);
+            message += `%0A*Total: ₹${total.toFixed(2)}*`;
 
-                                if (item) {
-                                // Show Counter
-                                container.innerHTML = `
-                                <div class="qty-control-catalog">
-                                    <button onclick="updateQuantity('${name}', ${item.price}, -1)">-</button>
-                                    <span>${item.qty}</span>
-                                    <button onclick="updateQuantity('${name}', ${item.price}, 1)">+</button>
-                                </div>
-                                `;
-                                } else {
-                                // Show Add Button
-                                let price = 250;
-                                if (name === 'Double Fudge') price = 300;
-                                if (name === 'White Choc Macadamia') price = 350;
+            window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+        }
 
-                                container.innerHTML = `
-                                <button class="btn-add" onclick="updateQuantity('${name}', ${price}, 1)">
-                                    <i class="fas fa-plus"></i> Add to Cart
-                                </button>
-                                `;
-                                }
-                                });
-                                }
+        function submitCorporateInquiry(e) {
+            e.preventDefault();
+            const name = document.getElementById('c_name').value;
+            const company = document.getElementById('c_company').value;
+            const event = document.getElementById('c_event').value;
+            const qty = document.getElementById('c_qty').value;
 
-                                function updateCartUI() {
-                                const itemsContainer = document.getElementById('cartItems');
-                                const countSpan = document.getElementById('cartCount');
-                                const totalSpan = document.getElementById('cartTotal');
+            const phoneNumber = "918105487345";
+            let message = `*Corporate Inquiry* %0A%0A`;
+            message += `Name: ${name}%0A`;
+            message += `Company: ${company}%0A`;
+            message += `Event: ${event}%0A`;
+            message += `Est. Quantity: ${qty}%0A`;
+            message += `%0AHello! I'd like to plan a corporate order.`;
 
-                                // Update Count
-                                const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
-                                countSpan.textContent = totalQty;
-
-                                // Render Items
-                                itemsContainer.innerHTML = '';
-                                let total = 0;
-
-                                if (cart.length === 0) {
-                                itemsContainer.innerHTML = '<p style="text-align:center; color:#888; margin-top:2rem;">
-                                    Your cart is empty.</p>';
-                                } else {
-                                cart.forEach((item) => {
-                                total += item.price * item.qty;
-                                const itemEl = document.createElement('div');
-                                itemEl.classList.add('cart-item');
-                                itemEl.innerHTML = `
-                                <div class="item-info">
-                                    <h4>${item.name}</h4>
-                                    <span class="item-price">₹${item.price} x ${item.qty}</span>
-                                </div>
-                                <div class="qty-control-cart">
-                                    <button onclick="updateQuantity('${item.name}', ${item.price}, -1)">-</button>
-                                    <span>${item.qty}</span>
-                                    <button onclick="updateQuantity('${item.name}', ${item.price}, 1)">+</button>
-                                </div>
-                                `;
-                                itemsContainer.appendChild(itemEl);
-                                });
-                                }
-
-                                // Update Total
-                                totalSpan.textContent = '₹' + total.toFixed(2);
-                                }
-
-                                function checkoutWhatsApp() {
-                                if (cart.length === 0) {
-                                alert("Your cart is empty!");
-                                return;
-                                }
-
-                                const phoneNumber = "918105487345";
-                                let message = "Hello! I'd like to place an order:%0A%0A";
-                                let total = 0;
-
-                                cart.forEach(item => {
-                                const itemTotal = item.price * item.qty;
-                                message += `${item.qty} x ${item.name} (₹${itemTotal})%0A`;
-                                total += itemTotal;
-                                });
-
-                                message += `%0A*Total: ₹${total.toFixed(2)}*`;
-
-                                window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
-                                }
-
-                                function submitCorporateInquiry(e) {
-                                e.preventDefault();
-                                const name = document.getElementById('c_name').value;
-                                const company = document.getElementById('c_company').value;
-                                const event = document.getElementById('c_event').value;
-                                const qty = document.getElementById('c_qty').value;
-
-                                const phoneNumber = "918105487345";
-                                let message = `*Corporate Inquiry* %0A%0A`;
-                                message += `Name: ${name}%0A`;
-                                message += `Company: ${company}%0A`;
-                                message += `Event: ${event}%0A`;
-                                message += `Est. Quantity: ${qty}%0A`;
-                                message += `%0AHello! I'd like to plan a corporate order.`;
-
-                                window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
-                                }
-                                </script>
+            window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+        }
+    </script>
 </body>
 
 </html>
