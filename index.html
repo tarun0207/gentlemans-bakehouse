@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gentleman's Bakehouse | Artisan Breads & Pastries</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@400;700&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-color: #1a1a1a;
+            --accent-color: #c5a059;
+            --bg-color: #f9f5f0;
+            --text-color: #333333;
+            --white: #ffffff;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Inter', sans-serif;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: var(--font-heading);
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition);
+        }
+
+        button,
+        .btn {
+            cursor: pointer;
+            border: none;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        /* Header */
+        header {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 1rem 5%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: var(--font-heading);
+            color: var(--accent-color);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a:hover {
+            color: var(--accent-color);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            color: var(--white);
+            font-size: 1.5rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 90vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('./assets/hero.png');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: var(--white);
+            padding: 0 1rem;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            padding: 1rem 2.5rem;
+            font-weight: 600;
+            border-radius: 2px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .btn-primary:hover {
+            background-color: #d4b06b;
+            transform: translateY(-2px);
+        }
+
+        /* Sections General */
+        section {
+            padding: 5rem 5%;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background-color: var(--accent-color);
+            margin: 1rem auto 0;
+        }
+
+        /* Special Offers */
+        .offer-card {
+            display: flex;
+            background-color: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .offer-image {
+            flex: 1;
+            background: url('./assets/offer.png') center/cover;
+            min-height: 400px;
+        }
+
+        .offer-content {
+            flex: 1;
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .offer-tag {
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            display: inline-block;
+            padding: 0.25rem 1rem;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            align-self: flex-start;
+        }
+
+        /* Menu/Catalog */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .menu-item {
+            background: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+        }
+
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-img {
+            height: 250px;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .menu-details {
+            padding: 1.5rem;
+        }
+
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .price {
+            color: var(--accent-color);
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .description {
+            color: #666;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .btn-order {
+            display: block;
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--primary-color);
+            color: var(--white);
+            text-align: center;
+            border-radius: 4px;
+            font-weight: 500;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-order:hover {
+            background-color: #333;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            background-color: #f0ebe5;
+            text-align: center;
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .testimonial-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.02);
+        }
+
+        .stars {
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+
+        .review-text {
+            font-style: italic;
+            margin-bottom: 1.5rem;
+        }
+
+        .reviewer {
+            font-weight: 700;
+            font-family: var(--font-heading);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--primary-color);
+            color: #999;
+            padding: 3rem 5%;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-links a {
+            margin: 0 10px;
+            font-size: 1.5rem;
+            color: var(--white);
+        }
+
+        .copyright {
+            font-size: 0.9rem;
+            border-top: 1px solid #333;
+            padding-top: 2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+
+            nav ul {
+                display: none;
+                /* Make hamburger later if needed, simple stack for now */
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: var(--primary-color);
+                flex-direction: column;
+                padding: 1rem;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            nav.active ul {
+                display: flex;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .offer-card {
+                flex-direction: column;
+            }
+
+            .offer-image {
+                min-height: 250px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">Gentleman's Bakehouse</div>
+        <button class="mobile-menu-btn"><i class="fas fa-bars"></i></button>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#offers">Specials</a></li>
+                <li><a href="#menu">Menu</a></li>
+                <li><a href="#reviews">Reviews</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <h1>Artisan Baking for the Modern Gentleman</h1>
+        <p>Experience the finest handcrafted sourdough, pastries, and desserts.</p>
+        <a href="#menu" class="btn btn-primary">View Menu</a>
+    </section>
+
+    <!-- Special Offers -->
+    <section id="offers">
+        <h2 class="section-title">Special Offers</h2>
+        <div class="offer-card">
+            <div class="offer-image"></div>
+            <div class="offer-content">
+                <span class="offer-tag">LIMITED TIME</span>
+                <h3>The Morning Gentleman Information</h3>
+                <p style="margin: 1rem 0;">Start your day right with our premium bundle. Includes a fresh butter
+                    croissant, a catalog muffin of your choice, and our signature cold brew coffee.</p>
+                <div class="price" style="margin-bottom: 1.5rem; font-size: 1.5rem;">$12.99 <span
+                        style="text-decoration: line-through; color: #999; font-size: 1rem; margin-left: 10px;">$18.50</span>
+                </div>
+                <button onclick="orderItem('Morning Gentleman Bundle')" class="btn btn-primary">Claim Offer via
+                    WhatsApp</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Menu Section -->
+    <section id="menu">
+        <h2 class="section-title">Our Catalogue</h2>
+        <div class="menu-grid">
+            <!-- Item 1 -->
+            <div class="menu-item">
+                <img src="./assets/sourdough.png" alt="Rustic Sourdough" class="menu-img">
+                <div class="menu-details">
+                    <div class="menu-header">
+                        <h3>Rustic Sourdough</h3>
+                        <span class="price">$8.50</span>
+                    </div>
+                    <p class="description">Naturally leavened, 48-hour fermentation process. Crispy crust with a soft,
+                        airy crumb.</p>
+                    <button onclick="orderItem('Rustic Sourdough')" class="btn-order"><i class="fab fa-whatsapp"></i>
+                        Order Now</button>
+                </div>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="menu-item">
+                <img src="./assets/cake.png" alt="Dark Chocolate Cake" class="menu-img">
+                <div class="menu-details">
+                    <div class="menu-header">
+                        <h3>Dark Chocolate Royale</h3>
+                        <span class="price">$35.00</span>
+                    </div>
+                    <p class="description">Rich, decadent dark chocolate cake with ganache frosting. Serves 8-10 people.
+                    </p>
+                    <button onclick="orderItem('Dark Chocolate Royale')" class="btn-order"><i
+                            class="fab fa-whatsapp"></i> Order Now</button>
+                </div>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="menu-item">
+                <img src="./assets/croissant.png" alt="Classic Croissant" class="menu-img">
+                <div class="menu-details">
+                    <div class="menu-header">
+                        <h3>Classic Butter Croissant</h3>
+                        <span class="price">$4.25</span>
+                    </div>
+                    <p class="description">Layers of flaky pastry made with imported French butter. Baked fresh daily.
+                    </p>
+                    <button onclick="orderItem('Classic Butter Croissant')" class="btn-order"><i
+                            class="fab fa-whatsapp"></i> Order Now</button>
+                </div>
+            </div>
+
+            <!-- Item 4 -->
+            <div class="menu-item">
+                <img src="./assets/offer.png" alt="Assorted Pastry Box" class="menu-img">
+                <div class="menu-details">
+                    <div class="menu-header">
+                        <h3>Assorted Pastry Box</h3>
+                        <span class="price">$22.00</span>
+                    </div>
+                    <p class="description">A curated selection of our finest pastries. Perfect for sharing at the office
+                        or home.</p>
+                    <button onclick="orderItem('Assorted Pastry Box')" class="btn-order"><i class="fab fa-whatsapp"></i>
+                        Order Now</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section id="reviews" class="testimonials">
+        <h2 class="section-title">What Gentlemen Say</h2>
+        <div class="testimonial-grid">
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div>
+                <p class="review-text">"Absolutely the best sourdough I've had in years. The crust is perfect."</p>
+                <p class="reviewer">— James Sterling</p>
+            </div>
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div>
+                <p class="review-text">"The chocolate estate cake was the highlight of my dinner party. Highly
+                    recommended."</p>
+                <p class="reviewer">— Arthur Morgan</p>
+            </div>
+            <div class="testimonial-card">
+                <div class="stars">★★★★★</div>
+                <p class="review-text">"Fast delivery, excellent packaging, and the taste is simply refined."</p>
+                <p class="reviewer">— Thomas Shelby</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="footer-content">
+            <div class="logo" style="color: var(--accent-color);">Gentleman's Bakehouse</div>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-whatsapp"></i></a>
+            </div>
+        </div>
+        <p class="copyright">&copy; 2024 Gentleman's Bakehouse. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mobile Menu Toggle
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            const nav = document.querySelector('nav');
+
+            if (menuBtn) {
+                menuBtn.addEventListener('click', () => {
+                    nav.classList.toggle('active');
+                });
+            }
+
+            // Smooth Scroll for Anchor Links (Backup for CSS smooth-scroll)
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                        // Close mobile menu if open
+                        if (nav.classList.contains('active')) {
+                            nav.classList.remove('active');
+                        }
+                    }
+                });
+            });
+        });
+
+        // WhatsApp Integration
+        function orderItem(itemName) {
+            // Updated to user's number
+            const phoneNumber = "918105487345";
+            const message = `Hello, I would like to place an order for: ${itemName}. Please confirm availability.`;
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+
+            window.open(whatsappUrl, '_blank');
+        }
+    </script>
+</body>
+
+</html>
