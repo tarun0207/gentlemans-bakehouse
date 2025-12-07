@@ -74,10 +74,14 @@ function switchView(viewId) {
     const navLink = document.querySelector(`.sidebar-nav a[onclick*="${viewId}"]`);
     if (navLink) navLink.classList.add('active');
 
-    // Auto-load data for specific views
+    // Auto-load data
     if (viewId === 'orders') loadOrders();
     if (viewId === 'products') loadProducts();
     if (viewId === 'inventory') switchInventoryTab('ingredients');
+    if (viewId === 'corporate') loadCorporateLeads();
+    if (viewId === 'customers') loadCustomers();
+    if (viewId === 'settings') loadSettings();
+    if (viewId === 'overview') loadDashboardData();
 }
 
 // Data Loading Logic (Dashboard Overview)
@@ -491,7 +495,12 @@ async function loadInventory(type) {
     tbody.innerHTML = `<tr><td colspan="6" class="empty-cell">Loading ${type}...</td></tr>`;
 
     try {
-        const snapshot = await db.collection(type).orderBy('name').get();
+        // Query the 'inventory' collection and filter by type field
+        const snapshot = await db.collection('inventory')
+            .where('type', '==', type === 'ingredients' ? 'ingredient' : 'packaging')
+            .orderBy('name')
+            .get();
+
         tbody.innerHTML = '';
 
         let lowStockCount = 0;
@@ -501,7 +510,7 @@ async function loadInventory(type) {
         } else {
             snapshot.forEach(doc => {
                 const item = doc.data();
-                const isLow = item.stock <= (item.minLevel || 0);
+                const isLow = item.currentStock <= (item.minLevel || 0);
                 if (isLow) lowStockCount++;
 
                 const tr = document.createElement('tr');
@@ -513,9 +522,9 @@ async function loadInventory(type) {
                     <td><strong>${item.name}</strong></td>
                     <td>${item.category || '-'}</td>
                     <td>
-                        <button class="stock-adjust-btn" onclick="adjustStock('${type}', '${doc.id}', -1)">-</button>
-                        <span style="display:inline-block; width:60px; text-align:center; font-weight:bold;">${item.stock} ${item.unit}</span>
-                        <button class="stock-adjust-btn" onclick="adjustStock('${type}', '${doc.id}', 1)">+</button>
+                        <button class="stock-adjust-btn" onclick="adjustStock('${doc.id}', -1)">-</button>
+                        <span style="display:inline-block; width:60px; text-align:center; font-weight:bold;">${item.currentStock} ${item.unit}</span>
+                        <button class="stock-adjust-btn" onclick="adjustStock('${doc.id}', 1)">+</button>
                     </td>
                     <td>${item.minLevel || 0} ${item.unit}</td>
                     <td>${lastUpdated}</td>
@@ -580,7 +589,7 @@ async function editInventory(type, docId) {
     currentInvType = type;
 
     try {
-        const doc = await db.collection(type).doc(docId).get();
+        const doc = await db.collection('inventory').doc(docId).get();
         if (!doc.exists) return;
 
         const data = doc.data();
@@ -590,7 +599,7 @@ async function editInventory(type, docId) {
         document.getElementById('inv-name').value = data.name;
         document.getElementById('inv-category').value = data.category;
         document.getElementById('inv-supplier').value = data.supplier || '';
-        document.getElementById('inv-stock').value = data.stock;
+        document.getElementById('inv-stock').value = data.currentStock;
         document.getElementById('inv-unit').value = data.unit;
         document.getElementById('inv-min').value = data.minLevel;
 
@@ -606,9 +615,10 @@ async function saveInventoryItem() {
     const type = currentInvType;
     const data = {
         name: document.getElementById('inv-name').value,
+        type: type === 'ingredients' ? 'ingredient' : 'packaging',
         category: document.getElementById('inv-category').value,
         supplier: document.getElementById('inv-supplier').value,
-        stock: Number(document.getElementById('inv-stock').value),
+        currentStock: Number(document.getElementById('inv-stock').value),
         unit: document.getElementById('inv-unit').value,
         minLevel: Number(document.getElementById('inv-min').value),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -616,9 +626,9 @@ async function saveInventoryItem() {
 
     try {
         if (currentInvId) {
-            await db.collection(type).doc(currentInvId).update(data);
+            await db.collection('inventory').doc(currentInvId).update(data);
         } else {
-            await db.collection(type).add(data);
+            await db.collection('inventory').add(data);
         }
         closeInventoryModal();
         loadInventory(type);
@@ -629,23 +639,544 @@ async function saveInventoryItem() {
     }
 }
 
-async function adjustStock(type, docId, change) {
+async function adjustStock(docId, change) {
     try {
-        const docRef = db.collection(type).doc(docId);
+        const docRef = db.collection('inventory').doc(docId);
         await db.runTransaction(async (transaction) => {
             const doc = await transaction.get(docRef);
             if (!doc.exists) return;
 
-            const newStock = (doc.data().stock || 0) + change;
+            const newStock = (doc.data().currentStock || 0) + change;
             if (newStock < 0) return;
 
             transaction.update(docRef, {
-                stock: newStock,
+                currentStock: newStock,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             });
         });
-        loadInventory(type);
+
+        // Reload both tabs since we don't know which one we're on
+        loadInventory('ingredients');
+        loadInventory('packaging');
     } catch (e) {
         console.error("Adjustment failed:", e);
     }
 }
+
+/* ============================
+   CORPORATE / LEAD MANAGEMENT
+   ============================ */
+
+let currentLeadId = null;
+
+async function loadCorporateLeads() {
+    const tbody = document.getElementById('corporate-table-body');
+    const statusFilter = document.getElementById('corp-filter-status').value;
+    const dateFilter = document.getElementById('corp-filter-date').value;
+
+    tbody.innerHTML = '<tr><td colspan="7" class="empty-cell">Loading leads...</td></tr>';
+
+    try {
+        let query = db.collection('leads').orderBy('createdAt', 'desc');
+
+        if (statusFilter !== 'all') {
+            query = query.where('status', '==', statusFilter);
+        }
+
+        const snapshot = await query.limit(50).get();
+
+        if (snapshot.empty) {
+            tbody.innerHTML = '<tr><td colspan="7" class="empty-cell">No leads found.</td></tr>';
+            return;
+        }
+
+        let html = '';
+        snapshot.forEach(doc => {
+            const lead = doc.data();
+            // Client-side date filter (Firestore simple queries limit advanced date logic mixed with status)
+            // TODO: Enhance this with complex queries if needed
+
+            html += `
+                <tr>
+                    <td>${lead.companyName || '-'}</td>
+                    <td>
+                        <div>${lead.contactName}</div>
+                        <small style="color:#666;">${lead.email}</small>
+                    </td>
+                    <td>${lead.eventDate || '-'}</td>
+                    <td>${lead.budget ? '₹' + lead.budget : '-'}</td>
+                    <td><span class="status-badge status-${(lead.status || 'New').toLowerCase().replace(' ', '-')}">${lead.status || 'New'}</span></td>
+                    <td>${lead.createdAt ? new Date(lead.createdAt.seconds * 1000).toLocaleDateString() : '-'}</td>
+                    <td>
+                        <button class="btn-small btn-primary" onclick="openLeadModal('${doc.id}')">View</button>
+                    </td>
+                </tr>
+            `;
+        });
+        tbody.innerHTML = html;
+
+    } catch (e) {
+        console.error("Error loading leads:", e);
+        tbody.innerHTML = `<tr><td colspan="7" class="empty-cell" style="color:red;">Error: ${e.message}</td></tr>`;
+    }
+}
+
+async function addMockLead() {
+    try {
+        await db.collection('leads').add({
+            companyName: "TechCorp Inc.",
+            contactName: "John Doe",
+            email: "john@techcorp.com",
+            phone: "9876543210",
+            eventDate: "2025-12-25",
+            budget: 50000,
+            estimatedQty: 100,
+            message: "Need 100 gift boxes for Christmas party. Custom branding required.",
+            status: "New",
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        loadCorporateLeads();
+        // alert("Mock lead added!");
+    } catch (e) {
+        alert("Error: " + e.message);
+    }
+}
+
+async function openLeadModal(leadId) {
+    currentLeadId = leadId;
+    const modal = document.getElementById('lead-modal');
+    modal.style.display = 'flex'; // Show immediately
+
+    // Fetch details
+    try {
+        const doc = await db.collection('leads').doc(leadId).get();
+        if (!doc.exists) return; // Should handle error
+        const data = doc.data();
+
+        document.getElementById('lead-company').innerText = data.companyName || '-';
+        document.getElementById('lead-contact').innerText = data.contactName || '-';
+        document.getElementById('lead-email').innerText = data.email || '-';
+        document.getElementById('lead-phone').innerText = data.phone || '-';
+
+        document.getElementById('lead-date').innerText = data.eventDate || '-';
+        document.getElementById('lead-budget').innerText = data.budget ? '₹' + data.budget : '-';
+        document.getElementById('lead-qty').innerText = data.estimatedQty || '-';
+
+        document.getElementById('lead-message').innerText = data.message || '(No message)';
+
+        // Editable fields
+        document.getElementById('lead-status').value = data.status || 'New';
+        document.getElementById('lead-quote-ref').value = data.quoteRef || '';
+        document.getElementById('lead-notes').value = data.internalNotes || '';
+
+    } catch (e) {
+        console.error(e);
+        alert("Failed to load lead details.");
+    }
+}
+
+function closeLeadModal() {
+    document.getElementById('lead-modal').style.display = 'none';
+    currentLeadId = null;
+}
+
+async function saveLeadNotes() {
+    if (!currentLeadId) return;
+
+    const btn = document.querySelector('#lead-modal .btn-primary');
+    const originalText = btn.textContent;
+    btn.textContent = "Saving...";
+
+    const updates = {
+        status: document.getElementById('lead-status').value,
+        quoteRef: document.getElementById('lead-quote-ref').value,
+        internalNotes: document.getElementById('lead-notes').value,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    try {
+        await db.collection('leads').doc(currentLeadId).update(updates);
+        loadCorporateLeads();
+        closeLeadModal();
+    } catch (e) {
+        alert("Error saving: " + e.message);
+    } finally {
+        btn.textContent = originalText;
+    }
+}
+
+async function convertLeadToOrder() {
+    if (!confirm("Create a new Order from this Lead? This will mark the lead as Converted.")) return;
+
+    try {
+        const leadDoc = await db.collection('leads').doc(currentLeadId).get();
+        const lead = leadDoc.data();
+
+        const newOrder = {
+            customerName: lead.companyName ? `${lead.companyName} (${lead.contactName})` : lead.contactName,
+            customerPhone: lead.phone,
+            customerAddress: "Corporate Address (Update Later)",
+            customerEmail: lead.email,
+            items: [],
+            totalAmount: lead.budget || 0,
+            status: "new",
+            type: "Corporate",
+            leadId: currentLeadId,
+            orderDate: firebase.firestore.FieldValue.serverTimestamp(),
+            notes: `Converted from Lead. Event Date: ${lead.eventDate}. Requirements: ${lead.message}`
+        };
+
+        // Batch write: Create order, update lead
+        const batch = db.batch();
+        const orderRef = db.collection('orders').doc();
+        const leadRef = db.collection('leads').doc(currentLeadId);
+
+        batch.set(orderRef, newOrder);
+        batch.update(leadRef, { status: "Converted" });
+
+        await batch.commit();
+
+        closeLeadModal();
+        switchView('orders'); // Jump to orders to see it
+        alert("Lead converted successfully!");
+
+    } catch (e) {
+        alert("Conversion failed: " + e.message);
+    }
+}
+
+/* ============================
+   CUSTOMER MANAGEMENT
+   ============================ */
+let currentCustomerId = null;
+
+async function loadCustomers() {
+    const tbody = document.getElementById('customers-table-body');
+    const search = document.getElementById('cust-search').value.toLowerCase();
+
+    tbody.innerHTML = '<tr><td colspan="8" class="empty-cell">Loading...</td></tr>';
+
+    try {
+        let query = db.collection('customers').orderBy('totalSpend', 'desc').limit(50);
+        const snapshot = await query.get();
+
+        if (snapshot.empty) {
+            tbody.innerHTML = '<tr><td colspan="8" class="empty-cell">No customers found. Try "Sync Data" first.</td></tr>';
+            return;
+        }
+
+        let html = '';
+        snapshot.forEach(doc => {
+            const c = doc.data();
+            // Client-side search (Firestore lacks simple partial text search)
+            if (search && !c.name.toLowerCase().includes(search) && !c.phone.includes(search)) return;
+
+            html += `
+                <tr>
+                    <td>${c.name}</td>
+                    <td>${c.phone}</td>
+                    <td>${c.tags && c.tags.includes('Corporate') ? 'Corporate' : 'Retail'}</td>
+                    <td>${c.totalOrders}</td>
+                    <td>₹${c.totalSpend.toLocaleString()}</td>
+                    <td>${c.lastOrderDate ? new Date(c.lastOrderDate.seconds * 1000).toLocaleDateString() : '-'}</td>
+                    <td>${c.tags ? c.tags.map(t => `<span class="status-badge" style="background:#ddd; color:#333;">${t}</span>`).join(' ') : ''}</td>
+                    <td>
+                        <button class="btn-small btn-primary" onclick="viewCustomer('${doc.id}')">View</button>
+                    </td>
+                </tr>
+            `;
+        });
+        tbody.innerHTML = html || '<tr><td colspan="8" class="empty-cell">No matching results.</td></tr>';
+
+    } catch (e) {
+        console.error(e);
+        tbody.innerHTML = `<tr><td colspan="8" class="empty-cell" style="color:red;">Error: ${e.message}</td></tr>`;
+    }
+}
+
+async function syncCustomers() {
+    if (!confirm("Scan all past orders to build Customer Database? This might take a moment.")) return;
+
+    const btn = document.querySelector('.filters-bar .btn-primary[onclick="syncCustomers()"]');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Syncing...';
+    btn.disabled = true;
+
+    try {
+        const ordersSnap = await db.collection('orders').get();
+        const customersMap = {};
+
+        // Aggregate Data
+        ordersSnap.forEach(doc => {
+            const order = doc.data();
+            const phone = order.phone || order.customerPhone || 'Unknown';
+            // Normalize phone if possible, but for key use as-is
+
+            if (phone === 'Unknown') return;
+
+            if (!customersMap[phone]) {
+                customersMap[phone] = {
+                    name: order.customerName,
+                    phone: phone,
+                    email: order.customerEmail || '',
+                    address: order.address || order.customerAddress || '',
+                    totalOrders: 0,
+                    totalSpend: 0,
+                    lastOrderDate: null,
+                    tags: []
+                };
+            }
+
+            const c = customersMap[phone];
+            c.totalOrders++;
+            c.totalSpend += (order.totalAmount || 0);
+
+            const oDate = order.createdAt || order.orderDate; // handled as Firestore timestamp
+            if (oDate) {
+                if (!c.lastOrderDate || oDate.seconds > c.lastOrderDate.seconds) {
+                    c.lastOrderDate = oDate;
+                }
+            }
+            if (order.type === 'Corporate' && !c.tags.includes('Corporate')) c.tags.push('Corporate');
+        });
+
+        // Batch Write
+        const batch = db.batch();
+        Object.values(customersMap).forEach(c => {
+            // Use phone as Doc ID to prevent dupes
+            const ref = db.collection('customers').doc(c.phone);
+            batch.set(ref, c, { merge: true });
+        });
+
+        await batch.commit();
+        alert("Sync Complete! Customer database updated.");
+        loadCustomers();
+
+    } catch (e) {
+        alert("Sync failed: " + e.message);
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
+
+async function viewCustomer(id) {
+    currentCustomerId = id;
+    const modal = document.getElementById('customer-modal');
+    modal.style.display = 'flex';
+
+    try {
+        const doc = await db.collection('customers').doc(id).get();
+        if (!doc.exists) return;
+        const c = doc.data();
+
+        document.getElementById('cust-name').innerText = c.name;
+        document.getElementById('cust-phone').innerText = c.phone;
+        document.getElementById('cust-email').innerText = c.email || '-';
+        document.getElementById('cust-address').innerText = c.address || '-';
+
+        document.getElementById('cust-spend').innerText = '₹' + c.totalSpend.toLocaleString();
+        document.getElementById('cust-orders').innerText = c.totalOrders;
+        document.getElementById('cust-last-date').innerText = c.lastOrderDate ? new Date(c.lastOrderDate.seconds * 1000).toDateString() : '-';
+
+        document.getElementById('cust-tags').value = c.tags ? c.tags.join(', ') : '';
+        document.getElementById('cust-notes').value = c.internalNotes || '';
+
+        // Load History (Separate Query)
+        const historyBody = document.getElementById('cust-history-body');
+        historyBody.innerHTML = '<tr><td colspan="4">Loading history...</td></tr>';
+
+        const ordersSnap = await db.collection('orders')
+            .where('customerPhone', '==', c.phone) // Assuming strict match
+            .orderBy('createdAt', 'desc')
+            .limit(10)
+            .get();
+
+        let histHtml = '';
+        if (ordersSnap.empty) {
+            // Fallback for older schema where phone might be just 'phone'
+            // Real implementation might need OR query or client filter if schema varies
+            histHtml = '<tr><td colspan="4">No recent orders found via exact phone match.</td></tr>';
+        } else {
+            ordersSnap.forEach(oDoc => {
+                const o = oDoc.data();
+                histHtml += `
+                    <tr>
+                        <td>${o.createdAt ? new Date(o.createdAt.seconds * 1000).toLocaleDateString() : '-'}</td>
+                        <td>#${o.orderId ? o.orderId.slice(-6) : '...'}</td>
+                        <td>₹${o.totalAmount}</td>
+                        <td>${o.status}</td>
+                    </tr>
+                `;
+            });
+        }
+        historyBody.innerHTML = histHtml;
+
+    } catch (e) {
+        console.error(e);
+        alert("Error loading profile");
+    }
+}
+
+function closeCustomerModal() {
+    document.getElementById('customer-modal').style.display = 'none';
+    currentCustomerId = null;
+}
+
+async function saveCustomerDetails() {
+    if (!currentCustomerId) return;
+
+    const tagsStr = document.getElementById('cust-tags').value;
+    const notes = document.getElementById('cust-notes').value;
+    const tags = tagsStr.split(',').map(t => t.trim()).filter(t => t);
+
+    try {
+        await db.collection('customers').doc(currentCustomerId).update({
+            tags: tags,
+            internalNotes: notes,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        closeCustomerModal();
+        loadCustomers();
+    } catch (e) {
+        alert("Save failed: " + e.message);
+    }
+}
+
+
+/* ============================
+   SETTINGS & USER MANAGEMENT
+   ============================ */
+
+async function loadSettings() {
+    loadUsers(); // Load users table too
+
+    try {
+        const doc = await db.collection('settings').doc('general').get();
+        if (!doc.exists) return;
+        const data = doc.data();
+
+        // Business Info
+        document.getElementById('set-bus-name').value = data.businessName || '';
+        document.getElementById('set-bus-logo').value = data.logoUrl || '';
+        document.getElementById('set-bus-phone').value = data.contactPhone || '';
+        document.getElementById('set-bus-address').value = data.address || '';
+
+        // Orders
+        document.getElementById('set-prep-time').value = data.prepTime || 24;
+        document.getElementById('set-del-charge').value = data.deliveryCharge || 0;
+        document.getElementById('set-del-slots').value = data.deliverySlots || '';
+
+        // Notifications
+        document.getElementById('set-notif-order').checked = data.notifyOnOrder || false;
+        document.getElementById('set-notif-lead').checked = data.notifyOnLead || false;
+
+    } catch (e) {
+        console.error("Error loading settings:", e);
+    }
+}
+
+async function saveSettings() {
+    const btn = document.querySelector('#view-settings .btn-primary');
+    const originalText = btn.textContent;
+    btn.textContent = "Saving...";
+
+    const data = {
+        businessName: document.getElementById('set-bus-name').value,
+        logoUrl: document.getElementById('set-bus-logo').value,
+        contactPhone: document.getElementById('set-bus-phone').value,
+        address: document.getElementById('set-bus-address').value,
+
+        prepTime: Number(document.getElementById('set-prep-time').value),
+        deliveryCharge: Number(document.getElementById('set-del-charge').value),
+        deliverySlots: document.getElementById('set-del-slots').value,
+
+        notifyOnOrder: document.getElementById('set-notif-order').checked,
+        notifyOnLead: document.getElementById('set-notif-lead').checked,
+
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    try {
+        await db.collection('settings').doc('general').set(data, { merge: true });
+        alert("Settings saved successfully!");
+    } catch (e) {
+        alert("Error saving: " + e.message);
+    } finally {
+        btn.textContent = originalText;
+    }
+}
+
+/* User Management */
+
+async function loadUsers() {
+    const tbody = document.getElementById('users-table-body');
+    tbody.innerHTML = '<tr><td colspan="3">Loading...</td></tr>';
+
+    try {
+        const snapshot = await db.collection('users').orderBy('email').get();
+
+        if (snapshot.empty) {
+            tbody.innerHTML = '<tr><td colspan="3">No extra users found.</td></tr>';
+            return;
+        }
+
+        let html = '';
+        snapshot.forEach(doc => {
+            const u = doc.data();
+            html += `
+                <tr>
+                    <td>${u.email}</td>
+                    <td><span class="status-badge" style="background:#eee; color:#333;">${u.role}</span></td>
+                    <td>
+                        <button class="btn-small" onclick="deleteUser('${doc.id}')" style="color:red;"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+        });
+        tbody.innerHTML = html;
+
+    } catch (e) {
+        console.error(e);
+        tbody.innerHTML = `<tr><td colspan="3" style="color:red;">Error: ${e.message}</td></tr>`;
+    }
+}
+
+function openUserModal() {
+    document.getElementById('user-modal').style.display = 'flex';
+}
+
+function closeUserModal() {
+    document.getElementById('user-modal').style.display = 'none';
+    document.getElementById('user-email').value = '';
+}
+
+async function saveUser() {
+    const email = document.getElementById('user-email').value;
+    const role = document.getElementById('user-role').value;
+
+    if (!email) return alert("Email is required");
+
+    try {
+        await db.collection('users').add({
+            email: email,
+            role: role,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        closeUserModal();
+        loadUsers();
+    } catch (e) {
+        alert("Error adding user: " + e.message);
+    }
+}
+
+async function deleteUser(id) {
+    if (!confirm("Remove this user access?")) return;
+    try {
+        await db.collection('users').doc(id).delete();
+        loadUsers();
+    } catch (e) {
+        alert("Delete failed: " + e.message);
+    }
+}
+
