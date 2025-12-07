@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Gentleman’s Bakehouse</title>
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Playfair+Display:wght@400;700&display=swap"
+        rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/admin.css">
+
+    <!-- Firebase SDKs (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+
+<body>
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="login-container">
+        <div class="login-box">
+            <img src="./assets/logo.jpg" alt="Logo" class="admin-logo">
+            <h2>Admin Login</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="admin-email" placeholder="admin@gentlemansbakehouse.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="admin-password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-primary full-width">Login to Dashboard</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard (Hidden by default) -->
+    <div id="dashboard-app" class="dashboard-container" style="display: none;">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <h3>Gentleman's<br>Bakehouse</h3>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="active" onclick="switchView('overview')"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="#" onclick="switchView('orders')"><i class="fas fa-shopping-bag"></i> Orders</a>
+                <a href="#" onclick="switchView('inventory')"><i class="fas fa-boxes"></i> Inventory</a>
+                <a href="#" onclick="switchView('products')"><i class="fas fa-cookie"></i> Products</a>
+            </nav>
+            <div class="logout-area">
+                <button onclick="logout()" class="btn-outline"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <header class="top-bar">
+                <h2 id="page-title">Dashboard Overview</h2>
+                <div class="date-display" id="current-date">Saturday, 07 Dec 2024</div>
+            </header>
+
+            <!-- View: Overview -->
+            <div id="view-overview" class="view-section">
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="icon-bg blue"><i class="fas fa-shopping-cart"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Today's Orders</span>
+                            <h3 class="stat-value">0</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon-bg orange"><i class="fas fa-clock"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Pending</span>
+                            <h3 class="stat-value">0</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon-bg green"><i class="fas fa-check-circle"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Delivered</span>
+                            <h3 class="stat-value">0</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon-bg red"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Alerts</span>
+                            <h3 class="stat-value">0</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-split">
+                    <!-- Bake List -->
+                    <div class="dashboard-panel bake-list-panel">
+                        <div class="panel-header">
+                            <h3><i class="fas fa-fire"></i> Today's Bake List</h3>
+                            <button class="btn-small" onclick="printBakeList()">Print</button>
+                        </div>
+                        <div class="bake-list-content">
+                            <p class="empty-state">No active orders needing baking.</p>
+                            <!-- List injected via JS -->
+                            <!-- Example:
+                            <div class="bake-item">
+                                <span>Classic Choc Chip</span>
+                                <span class="bake-count">120 pcs</span>
+                            </div> -->
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions & Alerts -->
+                    <div class="dashboard-panel">
+                        <div class="panel-header">
+                            <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                        </div>
+                        <div class="quick-actions">
+                            <button class="action-btn"><i class="fas fa-plus"></i> Create Order</button>
+                            <button class="action-btn"><i class="fas fa-check-double"></i> Mark Batch Baked</button>
+                            <button class="action-btn"><i class="fas fa-cookie-bite"></i> Add Cookie</button>
+                        </div>
+
+                        <div class="panel-header" style="margin-top: 2rem;">
+                            <h3><i class="fas fa-bell"></i> Alerts</h3>
+                        </div>
+                        <div class="alerts-list">
+                            <!-- Example alerts -->
+                            <div class="alert-item warning">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span>Low Stock: Dark Chocolate Chips</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other Views (Placeholders) -->
+            <div id="view-orders" class="view-section" style="display: none;">
+                <h3>All Orders</h3>
+                <p>Order list table will go here.</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+
+</html>
