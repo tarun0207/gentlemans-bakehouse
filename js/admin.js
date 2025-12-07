@@ -69,19 +69,6 @@ function switchView(viewId) {
     if (target) {
         target.style.display = 'block';
     }
-
-    // Highlight nav (simple approximation)
-    const navLink = document.querySelector(`.sidebar-nav a[onclick*="${viewId}"]`);
-    if (navLink) navLink.classList.add('active');
-
-    // Auto-load data for specific views
-    if (viewId === 'orders') {
-        loadOrders();
-    }
-}
-
-// Data Loading Logic
-async function loadDashboardData() {
     console.log("Loading dashboard data...");
 
     const today = new Date();
