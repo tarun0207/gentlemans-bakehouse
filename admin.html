@@ -236,52 +236,92 @@
                                     <td colspan="8" class="empty-cell">Loading orders...</td>
                                 </tr>
                             </tbody>
-                        </table>
+                            Cookie</button>
+                    </div>
+
+                    <div class="dashboard-panel">
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Name</th>
+                                        <th>Category</th>
+                                        <th>Pack</th>
+                                        <th>Price</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="products-table-body">
+                                    <tr>
+                                        <td colspan="7" class="empty-cell">Loading products...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- View: Inventory (Placeholder) -->
-            <div id="view-inventory" class="view-section" style="display: none;">
-                <h3>Inventory Management</h3>
-                <p>Coming soon...</p>
-            </div>
-
-            <!-- View: Products -->
-            <div id="view-products" class="view-section" style="display: none;">
-
-                <div class="panel-header"
-                    style="background:transparent; border:none; box-shadow:none; padding:0; margin-bottom:1.5rem;">
-                    <h3>All Cookies</h3>
-                    <button class="btn-primary" onclick="openProductModal()"><i class="fas fa-plus"></i> Add New
-                        Cookie</button>
-                </div>
-
-                <div class="dashboard-panel">
-                    <div class="table-responsive">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Image</th>
-                                    <th>Name</th>
-                                    <th>Category</th>
-                                    <th>Pack</th>
-                                    <th>Price</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="products-table-body">
-                                <tr>
-                                    <td colspan="7" class="empty-cell">Loading products...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
 
         </main>
+    </div>
+
+    <!-- Inventory Modal -->
+    <div id="inventory-modal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="inv-modal-title">Add Item</h3>
+                <button class="close-modal" onclick="closeInventoryModal()">&times;</button>
+            </div>
+            <form id="inventory-form" onsubmit="event.preventDefault(); saveInventoryItem();">
+                <input type="hidden" id="inv-id">
+                <input type="hidden" id="inv-type"> <!-- 'ingredients' or 'packaging' -->
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Item Name</label>
+                        <input type="text" id="inv-name" required placeholder="e.g. Sugar">
+                    </div>
+
+                    <div class="modal-grid">
+                        <div class="form-group">
+                            <label>Category/Type</label>
+                            <select id="inv-category">
+                                <!-- Populated dynamically based on type -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Supplier (Optional)</label>
+                            <input type="text" id="inv-supplier" placeholder="e.g. Metro">
+                        </div>
+                    </div>
+
+                    <div class="modal-grid">
+                        <div class="form-group">
+                            <label>Current Stock</label>
+                            <div style="display:flex; gap:10px;">
+                                <input type="number" id="inv-stock" required placeholder="0" step="0.01">
+                                <select id="inv-unit" style="width:80px;">
+                                    <option value="kg">kg</option>
+                                    <option value="g">g</option>
+                                    <option value="L">L</option>
+                                    <option value="pcs">pcs</option>
+                                    <option value="packs">packs</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Min Level (Alert)</label>
+                            <input type="number" id="inv-min" required placeholder="5">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-outline" onclick="closeInventoryModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Item</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- Product Modal -->
