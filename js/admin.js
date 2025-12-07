@@ -70,6 +70,23 @@ function switchView(viewId) {
         target.style.display = 'block';
     }
 
+    // Highlight nav
+    const navLink = document.querySelector(`.sidebar-nav a[onclick*="${viewId}"]`);
+    if (navLink) navLink.classList.add('active');
+
+    // Auto-load data for specific views
+    if (viewId === 'orders') loadOrders();
+    if (viewId === 'products') loadProducts();
+    if (viewId === 'inventory') switchInventoryTab('ingredients');
+}
+
+// Data Loading Logic (Dashboard Overview)
+async function loadDashboardData() {
+    console.log("Loading dashboard data...");
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     try {
         const ordersSnapshot = await db.collection('orders')
             .orderBy('createdAt', 'desc')
