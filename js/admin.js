@@ -273,11 +273,10 @@ async function viewOrder(docId) {
         document.getElementById('modal-order-id').textContent = 'Order #' + (order.orderId || doc.id);
         document.getElementById('modal-customer-name').textContent = order.customerName || '-';
         document.getElementById('modal-customer-phone').textContent = order.phone || '-';
+        document.getElementById('modal-customer-email').textContent = order.email || '-';
         document.getElementById('modal-customer-address').textContent = order.address || '-';
 
-        document.getElementById('modal-order-date').textContent = order.createdAt ? order.createdAt.toDate().toLocaleString() : '-';
-        document.getElementById('modal-order-type').textContent = order.type || 'Retail';
-        document.getElementById('modal-order-status').value = order.status || 'new';
+        document.getElementById('modal-status').value = order.status || 'pending';
         document.getElementById('modal-notes').textContent = order.notes || 'No notes.';
 
         const itemsBody = document.getElementById('modal-items-body');
