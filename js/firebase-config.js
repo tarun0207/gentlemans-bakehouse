@@ -1,12 +1,13 @@
 // Firebase Configuration
 // TODO: Replace with your actual Firebase project keys
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyCrEdW9c864B9MnSPbA9gBVXt1puxF23p4",
+    authDomain: "gentlemans-bakehouse.firebaseapp.com",
+    projectId: "gentlemans-bakehouse",
+    storageBucket: "gentlemans-bakehouse.firebasestorage.app",
+    messagingSenderId: "95470340924",
+    appId: "1:95470340924:web:fc08fb4d8c0092b39fec39",
+    measurementId: "G-JDK42FTWKB"
 };
 
 // Initialize Firebase
