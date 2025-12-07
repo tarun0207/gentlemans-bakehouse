@@ -1049,6 +1049,7 @@ async function saveCustomerDetails() {
    SETTINGS & USER MANAGEMENT
    ============================ */
 
+
 async function loadSettings() {
     loadUsers(); // Load users table too
 
@@ -1058,19 +1059,18 @@ async function loadSettings() {
         const data = doc.data();
 
         // Business Info
-        document.getElementById('set-bus-name').value = data.businessName || '';
-        document.getElementById('set-bus-logo').value = data.logoUrl || '';
-        document.getElementById('set-bus-phone').value = data.contactPhone || '';
-        document.getElementById('set-bus-address').value = data.address || '';
+        document.getElementById('setting-business-name').value = data.businessName || '';
+        document.getElementById('setting-phone').value = data.contactPhone || '';
+        document.getElementById('setting-address').value = data.address || '';
 
         // Orders
-        document.getElementById('set-prep-time').value = data.prepTime || 24;
-        document.getElementById('set-del-charge').value = data.deliveryCharge || 0;
-        document.getElementById('set-del-slots').value = data.deliverySlots || '';
+        document.getElementById('setting-prep-time').value = data.prepTime || 24;
+        document.getElementById('setting-delivery-charge').value = data.deliveryCharge || 0;
+        document.getElementById('setting-delivery-slots').value = data.deliverySlots || '';
 
         // Notifications
-        document.getElementById('set-notif-order').checked = data.notifyOnOrder || false;
-        document.getElementById('set-notif-lead').checked = data.notifyOnLead || false;
+        document.getElementById('setting-notify-order').checked = data.notifyOnOrder || false;
+        document.getElementById('setting-notify-lead').checked = data.notifyOnLead || false;
 
     } catch (e) {
         console.error("Error loading settings:", e);
@@ -1083,17 +1083,16 @@ async function saveSettings() {
     btn.textContent = "Saving...";
 
     const data = {
-        businessName: document.getElementById('set-bus-name').value,
-        logoUrl: document.getElementById('set-bus-logo').value,
-        contactPhone: document.getElementById('set-bus-phone').value,
-        address: document.getElementById('set-bus-address').value,
+        businessName: document.getElementById('setting-business-name').value,
+        contactPhone: document.getElementById('setting-phone').value,
+        address: document.getElementById('setting-address').value,
 
-        prepTime: Number(document.getElementById('set-prep-time').value),
-        deliveryCharge: Number(document.getElementById('set-del-charge').value),
-        deliverySlots: document.getElementById('set-del-slots').value,
+        prepTime: Number(document.getElementById('setting-prep-time').value),
+        deliveryCharge: Number(document.getElementById('setting-delivery-charge').value),
+        deliverySlots: document.getElementById('setting-delivery-slots').value,
 
-        notifyOnOrder: document.getElementById('set-notif-order').checked,
-        notifyOnLead: document.getElementById('set-notif-lead').checked,
+        notifyOnOrder: document.getElementById('setting-notify-order').checked,
+        notifyOnLead: document.getElementById('setting-notify-lead').checked,
 
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
