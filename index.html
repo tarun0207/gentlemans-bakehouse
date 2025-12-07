@@ -300,6 +300,40 @@
         </div>
     </section>
 
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="overlay">
+        <div class="corporate-form-card" style="max-width: 500px; margin: 10vh auto; position: relative;">
+            <button class="close-cart" onclick="closeCheckout()"
+                style="position: absolute; right: 20px; top: 20px;">&times;</button>
+            <h3>Complete Your Order</h3>
+            <p style="text-align:center; color:#666; margin-bottom:1.5rem;">Please provide details for delivery.</p>
+
+            <form id="checkout-form" onsubmit="finalizeOrder(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="cust-name" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number (WhatsApp)</label>
+                    <input type="tel" id="cust-phone" required placeholder="+91 98765 43210">
+                </div>
+                <div class="form-group">
+                    <label>Delivery Address</label>
+                    <textarea id="cust-address" rows="3" required placeholder="Flat No, Building, Area..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-checkout">
+                    <i class="fab fa-whatsapp"></i> Proceed to Pay
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer id="contact" class="main-footer">
         <div class="footer-grid">
