@@ -596,10 +596,11 @@ body {
     background: #fcfcfc;
 }
 
-.modal-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-}
+@media (max-width: 700px) {
+    .modal-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
 }
 
 /* Products Management */

@@ -56,75 +56,13 @@ function showDashboard() {
     if (dashboardApp) dashboardApp.style.display = 'flex';
 }
 
-function showLogin() {
-    if (dashboardApp) dashboardApp.style.display = 'none';
-    if (loginScreen) loginScreen.style.display = 'flex';
-}
-
-function switchView(viewId) {
-    document.querySelectorAll('.view-section').forEach(el => el.style.display = 'none');
-    document.querySelectorAll('.sidebar-nav a').forEach(el => el.classList.remove('active'));
-
-    const target = document.getElementById(`view-${viewId}`);
-    if (target) {
-        target.style.display = 'block';
-    }
-    console.log("Loading dashboard data...");
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    try {
-        const ordersSnapshot = await db.collection('orders')
-            .orderBy('createdAt', 'desc')
-            .limit(20)
-            .get();
-
-        let todayCount = 0;
-        let productionCount = 0;
-        let dispatchCount = 0;
-        let weeklyRevenue = 0;
-        let bakeList = {};
-
-        const recentOrdersBody = document.getElementById('recent-orders-body');
-        if (recentOrdersBody) recentOrdersBody.innerHTML = '';
-
-        ordersSnapshot.forEach(doc => {
-            const order = doc.data();
-            const orderDate = order.createdAt ? order.createdAt.toDate() : new Date();
-            const isToday = orderDate >= today;
-
-            if (isToday) todayCount++;
-            if (order.status === 'in_production') productionCount++;
-            if (order.status === 'pending' || order.status === 'confirmed') dispatchCount++;
-
-            if (order.totalAmount) weeklyRevenue += order.totalAmount;
-
-            if (['pending', 'confirmed'].includes(order.status)) {
-                if (order.items && Array.isArray(order.items)) {
-                    order.items.forEach(item => {
-                        if (!bakeList[item.name]) {
-                            bakeList[item.name] = { qty: 0, orders: 0, orderIds: new Set() };
-                        }
-                        bakeList[item.name].qty += item.qty;
-                        bakeList[item.name].orderIds.add(order.orderId);
-                    });
-                }
-            }
-
-            if (recentOrdersBody) {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>#${order.orderId ? order.orderId.slice(-6) : 'N/A'}</td>
-                    <td>${order.customerName}</td>
-                    <td>${order.type || 'Retail'}</td>
                     <td>₹${order.totalAmount}</td>
                     <td><span class="status-badge status-${order.status || 'new'}">${order.status || 'New'}</span></td>
                     <td>
                         <button class="btn-small" onclick="viewOrder('${doc.id}')"><i class="fas fa-eye"></i></button>
                         ${order.status === 'pending' ? `<button class="btn-small" onclick="updateStatus('${doc.id}', 'confirmed')"><i class="fas fa-check"></i></button>` : ''}
                     </td>
-                `;
+`;
                 recentOrdersBody.appendChild(tr);
             }
         });
@@ -159,10 +97,10 @@ function renderBakeList(list) {
     keys.forEach(key => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td>${key}</td>
+    < td > ${ key }</td >
             <td style="font-weight:700">${list[key].qty} boxes</td>
             <td>${list[key].orders} orders</td>
-        `;
+`;
         container.appendChild(tr);
     });
 }
@@ -217,14 +155,14 @@ async function loadOrders() {
             if (typeFilter !== 'all' && (order.type || 'Retail') !== typeFilter) return;
 
             // Simplify Items string
-            let itemsSummary = order.items ? order.items.map(i => `${i.qty}x ${i.name.split(' ').slice(-2).join(' ')}`).join(', ') : 'No items';
+            let itemsSummary = order.items ? order.items.map(i => `${ i.qty }x ${ i.name.split(' ').slice(-2).join(' ') } `).join(', ') : 'No items';
             if (itemsSummary.length > 30) itemsSummary = itemsSummary.substring(0, 30) + '...';
 
             const dateStr = order.createdAt ? order.createdAt.toDate().toLocaleDateString() : '-';
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>#${order.orderId ? order.orderId.slice(-6) : '...'}</td>
+    < td > #${ order.orderId ? order.orderId.slice(-6) : '...' }</td >
                 <td>${dateStr}</td>
                 <td>${order.customerName}<br><small>${order.phone || ''}</small></td>
                 <td>${order.type || 'Retail'}</td>
@@ -234,13 +172,13 @@ async function loadOrders() {
                 <td>
                     <button class="btn-small" onclick="viewOrder('${doc.id}')"><i class="fas fa-eye"></i></button>
                 </td>
-            `;
+`;
             tbody.appendChild(tr);
         });
 
     } catch (e) {
         console.error("Load orders error:", e);
-        tbody.innerHTML = `<tr><td colspan="8" class="empty-cell">Error loading orders: ${e.message}</td></tr>`;
+        tbody.innerHTML = `< tr > <td colspan="8" class="empty-cell">Error loading orders: ${e.message}</td></tr > `;
     }
 }
 
@@ -277,11 +215,11 @@ async function viewOrder(docId) {
             order.items.forEach(item => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${item.name}</td>
+    < td > ${ item.name }</td >
                     <td>${item.qty}</td>
                     <td>₹${item.price}</td>
                     <td>₹${item.price * item.qty}</td>
-                `;
+`;
                 itemsBody.appendChild(tr);
             });
         }
