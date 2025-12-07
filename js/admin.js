@@ -327,11 +327,14 @@ function saveOrderStatus() {
 }
 
 // Global click to close modal
+// Global click to close modal
 window.onclick = function (event) {
     const modal = document.getElementById('order-modal');
     const prodModal = document.getElementById('product-modal');
+    const invModal = document.getElementById('inventory-modal');
     if (event.target == modal) closeModal();
     if (event.target == prodModal) closeProductModal();
+    if (event.target == invModal) closeInventoryModal();
 }
 
 // Product Management Logic
@@ -456,10 +459,188 @@ async function saveProduct() {
 
 async function toggleProductStatus(docId, newStatus) {
     if (!confirm("Change status?")) return;
+}
+}
+
+// Inventory Management Logic
+let currentInvId = null;
+let currentInvType = 'ingredients'; // ingredients or packaging
+
+function switchInventoryTab(tab) {
+    currentInvType = tab;
+    // UI toggle
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`.tab-btn[onclick*="${tab}"]`).classList.add('active');
+
+    document.querySelectorAll('.inventory-tab-content').forEach(content => content.style.display = 'none');
+    document.getElementById(`tab-${tab}`).style.display = 'block';
+
+    // Load data
+    loadInventory(tab);
+}
+
+async function loadInventory(type) {
+    const tbody = document.getElementById(`${type}-table-body`);
+    if (!tbody) return;
+
+    tbody.innerHTML = `<tr><td colspan="6" class="empty-cell">Loading ${type}...</td></tr>`;
+
     try {
-        await db.collection('products').doc(docId).update({ status: newStatus });
-        loadProducts();
+        const snapshot = await db.collection(type).orderBy('name').get();
+        tbody.innerHTML = '';
+
+        let lowStockCount = 0;
+
+        if (snapshot.empty) {
+            tbody.innerHTML = `<tr><td colspan="6" class="empty-cell">No items found. Add some!</td></tr>`;
+        } else {
+            snapshot.forEach(doc => {
+                const item = doc.data();
+                const isLow = item.stock <= (item.minLevel || 0);
+                if (isLow) lowStockCount++;
+
+                const tr = document.createElement('tr');
+                if (isLow) tr.classList.add('low-stock-row');
+
+                const lastUpdated = item.updatedAt ? item.updatedAt.toDate().toLocaleDateString() : '-';
+
+                tr.innerHTML = `
+                    <td><strong>${item.name}</strong></td>
+                    <td>${item.category || '-'}</td>
+                    <td>
+                        <button class="stock-adjust-btn" onclick="adjustStock('${type}', '${doc.id}', -1)">-</button>
+                        <span style="display:inline-block; width:60px; text-align:center; font-weight:bold;">${item.stock} ${item.unit}</span>
+                        <button class="stock-adjust-btn" onclick="adjustStock('${type}', '${doc.id}', 1)">+</button>
+                    </td>
+                    <td>${item.minLevel || 0} ${item.unit}</td>
+                    <td>${lastUpdated}</td>
+                    <td>
+                        <button class="table-action-btn" onclick="editInventory('${type}', '${doc.id}')"><i class="fas fa-edit"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Update Summary Pill
+        const pillId = type === 'ingredients' ? 'low-stock-ingredients' : 'low-stock-packaging';
+        const countId = type === 'ingredients' ? 'count-low-ing' : 'count-low-pack';
+        const pill = document.getElementById(pillId);
+        if (pill) {
+            if (document.getElementById(countId)) document.getElementById(countId).textContent = lowStockCount;
+
+            if (lowStockCount > 0) {
+                pill.style.display = 'inline-flex';
+            } else {
+                pill.style.display = 'none';
+            }
+        }
+
+    } catch (e) {
+        console.error("Load inventory error:", e);
+        tbody.innerHTML = `<tr><td colspan="6" class="empty-cell">Error: ${e.message}</td></tr>`;
+    }
+}
+
+function openInventoryModal(type) {
+    currentInvType = type;
+    currentInvId = null;
+    document.getElementById('inventory-form').reset();
+    document.getElementById('inv-type').value = type;
+    document.getElementById('inv-modal-title').textContent = type === 'ingredients' ? "Add Ingredient" : "Add Packaging";
+
+    // Populate Categories
+    const catSelect = document.getElementById('inv-category');
+    catSelect.innerHTML = '';
+    const cats = type === 'ingredients'
+        ? ['Flour', 'Fat', 'Sugar', 'Add-ons', 'Flavouring']
+        : ['Box', 'Pouch', 'Sticker', 'Label', 'Other'];
+
+    cats.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.textContent = c;
+        catSelect.appendChild(opt);
+    });
+
+    document.getElementById('inventory-modal').style.display = 'flex';
+}
+
+function closeInventoryModal() {
+    document.getElementById('inventory-modal').style.display = 'none';
+}
+
+async function editInventory(type, docId) {
+    currentInvId = docId;
+    currentInvType = type;
+
+    try {
+        const doc = await db.collection(type).doc(docId).get();
+        if (!doc.exists) return;
+
+        const data = doc.data();
+        openInventoryModal(type);
+        document.getElementById('inv-modal-title').textContent = "Edit " + data.name;
+
+        document.getElementById('inv-name').value = data.name;
+        document.getElementById('inv-category').value = data.category;
+        document.getElementById('inv-supplier').value = data.supplier || '';
+        document.getElementById('inv-stock').value = data.stock;
+        document.getElementById('inv-unit').value = data.unit;
+        document.getElementById('inv-min').value = data.minLevel;
+
     } catch (e) {
         alert("Error: " + e.message);
+    }
+}
+
+async function saveInventoryItem() {
+    const btn = document.querySelector('#inventory-modal .btn-primary');
+    btn.textContent = "Saving...";
+
+    const type = currentInvType;
+    const data = {
+        name: document.getElementById('inv-name').value,
+        category: document.getElementById('inv-category').value,
+        supplier: document.getElementById('inv-supplier').value,
+        stock: Number(document.getElementById('inv-stock').value),
+        unit: document.getElementById('inv-unit').value,
+        minLevel: Number(document.getElementById('inv-min').value),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    try {
+        if (currentInvId) {
+            await db.collection(type).doc(currentInvId).update(data);
+        } else {
+            await db.collection(type).add(data);
+        }
+        closeInventoryModal();
+        loadInventory(type);
+    } catch (e) {
+        alert("Error saving: " + e.message);
+    } finally {
+        btn.textContent = "Save Item";
+    }
+}
+
+async function adjustStock(type, docId, change) {
+    try {
+        const docRef = db.collection(type).doc(docId);
+        await db.runTransaction(async (transaction) => {
+            const doc = await transaction.get(docRef);
+            if (!doc.exists) return;
+
+            const newStock = (doc.data().stock || 0) + change;
+            if (newStock < 0) return;
+
+            transaction.update(docRef, {
+                stock: newStock,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        });
+        loadInventory(type);
+    } catch (e) {
+        console.error("Adjustment failed:", e);
     }
 }
