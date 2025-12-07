@@ -19,6 +19,27 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Gentleman’s Bakehouse</title>
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Playfair+Display:wght@400;700&display=swap"
+        rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/admin.css">
+
+    <!-- Firebase SDKs (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
 
 <body>
 
@@ -66,8 +87,92 @@
             <header class="top-bar">
                 <h3>All Orders</h3>
                 <p>Order list table will go here.</p>
-    </div>
-    </main>
+            </header>
+            <div class="dashboard-grid-layout">
+                <!-- Left Column: Orders & Bake List -->
+                <div class="main-column">
+
+                    <!-- Recent Orders -->
+                    <div class="dashboard-panel">
+                        <div class="panel-header">
+                            <h3><i class="fas fa-list-alt"></i> Recent Orders</h3>
+                            <a href="#" onclick="switchView('orders')"
+                                style="font-size:0.9rem; color:var(--accent-color);">View All</a>
+                        </div>
+                        <div style="overflow-x:auto;">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Type</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recent-orders-body">
+                                    <tr>
+                                        <td colspan="6" class="empty-cell">Loading...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right Column: Bake List & Alerts -->
+                <div class="side-column">
+
+                    <!-- Bake List -->
+                    <div class="dashboard-panel bake-list-panel">
+                        <div class="panel-header">
+                            <h3><i class="fas fa-fire"></i> Bake List</h3>
+                            <button class="btn-small" onclick="printBakeList()"><i class="fas fa-print"></i></button>
+                        </div>
+                        <table class="data-table" style="font-size:0.9rem;">
+                            <thead>
+                                <tr>
+                                    <th>Cookie</th>
+                                    <th>Qty</th>
+                                    <th>Orders</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bake-list-body">
+                                <tr>
+                                    <td colspan="3" class="empty-cell">Calculating...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Notifications -->
+                    <div class="dashboard-panel">
+                        <div class="panel-header">
+                            <h3><i class="fas fa-bell"></i> Notifications</h3>
+                        </div>
+                        <div class="notifications-list">
+                            <div class="notification-item warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <div class="notif-text">
+                                    <strong>Low Stock</strong>
+                                    <span>Check Choc Chips inventory</span>
+                                </div>
+                            </div>
+                            <div class="notification-item info">
+                                <i class="fas fa-briefcase"></i>
+                                <div class="notif-text">
+                                    <strong>New Corporate Inquiry</strong>
+                                    <span>TechCorp needs quote</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
     </div>
 
     <!-- Scripts -->
