@@ -459,7 +459,12 @@ async function saveProduct() {
 
 async function toggleProductStatus(docId, newStatus) {
     if (!confirm("Change status?")) return;
-}
+    try {
+        await db.collection('products').doc(docId).update({ status: newStatus });
+        loadProducts();
+    } catch (e) {
+        alert("Error: " + e.message);
+    }
 }
 
 // Inventory Management Logic
