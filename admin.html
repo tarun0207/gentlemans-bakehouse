@@ -62,413 +62,210 @@
 
         <!-- Main Content -->
         <main class="main-content">
+            <div id="inventory-modal" class="modal-overlay">
+                <div class="modal-container">
+                    <div class="modal-header">
+                        <h3 id="inv-modal-title">Add Item</h3>
+                        <button class="close-modal" onclick="closeInventoryModal()">&times;</button>
+                    </div>
+                    <form id="inventory-form" onsubmit="event.preventDefault(); saveInventoryItem();">
+                        <input type="hidden" id="inv-id">
+                        <input type="hidden" id="inv-type"> <!-- 'ingredients' or 'packaging' -->
 
-            <!-- Top Header -->
-            <header class="top-bar">
-                <h3 id="page-title">Dashboard Overview</h3>
-                <div class="user-profile">
-                    <span id="current-date">Fetching date...</span>
-                    <!-- <i class="fas fa-user-circle" style="font-size:1.5rem;"></i> -->
-                </div>
-            </header>
-
-            <!-- View: Dashboard Overview -->
-            <div id="view-overview" class="view-section">
-                <!-- KPI Stats -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <span class="stat-label">Today's Orders</span>
-                            <span class="stat-value" id="kpi-today-count">0</span>
-                        </div>
-                        <div class="icon-bg blue"><i class="fas fa-shopping-cart"></i></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <span class="stat-label">In Production</span>
-                            <span class="stat-value" id="kpi-production-count">0</span>
-                        </div>
-                        <div class="icon-bg orange"><i class="fas fa-fire"></i></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <span class="stat-label">To Dispatch</span>
-                            <span class="stat-value" id="kpi-dispatch-count">0</span>
-                        </div>
-                        <div class="icon-bg green"><i class="fas fa-truck"></i></div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-info">
-                            <span class="stat-label">Revenue (Week)</span>
-                            <span class="stat-value" id="kpi-revenue">₹0</span>
-                        </div>
-                        <div class="icon-bg purple"><i class="fas fa-rupee-sign"></i></div>
-                    </div>
-                </div>
-
-                <div class="dashboard-grid-layout">
-                    <!-- Left Column: Orders -->
-                    <div class="main-column">
-                        <div class="dashboard-panel">
-                            <div class="panel-header">
-                                <h3><i class="fas fa-list-alt"></i> Recent Orders</h3>
-                                <a href="#" onclick="switchView('orders')"
-                                    style="font-size:0.9rem; color:var(--accent-color);">View All</a>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>Item Name</label>
+                                <input type="text" id="inv-name" required placeholder="e.g. Sugar">
                             </div>
-                            <div style="overflow-x:auto;">
-                                <table class="data-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Order ID</th>
-                                            <th>Customer</th>
-                                            <th>Type</th>
-                                            <th>Amount</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="recent-orders-body">
-                                        <tr>
-                                            <td colspan="6" class="empty-cell">Loading...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Right Column: Bake List & Alerts -->
-                    <div class="side-column">
-                        <div class="dashboard-panel bake-list-panel">
-                            <div class="panel-header">
-                                <h3><i class="fas fa-fire"></i> Bake List</h3>
-                                <button class="btn-small" onclick="printBakeList()"><i
-                                        class="fas fa-print"></i></button>
+                            <div class="modal-grid">
+                                <div class="form-group">
+                                    <label>Category/Type</label>
+                                    <select id="inv-category">
+                                        <!-- Populated dynamically based on type -->
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Supplier (Optional)</label>
+                                    <input type="text" id="inv-supplier" placeholder="e.g. Metro">
+                                </div>
                             </div>
-                            <table class="data-table" style="font-size:0.9rem;">
-                                <thead>
-                                    <tr>
-                                        <th>Cookie</th>
-                                        <th>Qty</th>
-                                        <th>Orders</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="bake-list-body">
-                                    <tr>
-                                        <td colspan="3" class="empty-cell">Calculating...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
 
-                        <div class="dashboard-panel">
-                            <div class="panel-header">
-                                <h3><i class="fas fa-bell"></i> Notifications</h3>
-                            </div>
-                            <div class="notifications-list">
-                                <div class="notification-item warning">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                    <div class="notif-text">
-                                        <strong>Low Stock</strong>
-                                        <span>Check Choc Chips inventory</span>
+                            <div class="modal-grid">
+                                <div class="form-group">
+                                    <label>Current Stock</label>
+                                    <div style="display:flex; gap:10px;">
+                                        <input type="number" id="inv-stock" required placeholder="0" step="0.01">
+                                        <select id="inv-unit" style="width:80px;">
+                                            <option value="kg">kg</option>
+                                            <option value="g">g</option>
+                                            <option value="L">L</option>
+                                            <option value="pcs">pcs</option>
+                                            <option value="packs">packs</option>
+                                        </select>
                                     </div>
                                 </div>
-                                <div class="notification-item info">
-                                    <i class="fas fa-briefcase"></i>
-                                    <div class="notif-text">
-                                        <strong>New Corporate Inquiry</strong>
-                                        <span>TechCorp needs quote</span>
-                                    </div>
+                                <div class="form-group">
+                                    <label>Min Level (Alert)</label>
+                                    <input type="number" id="inv-min" required placeholder="5">
                                 </div>
                             </div>
                         </div>
-                    </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn-outline" onclick="closeInventoryModal()">Cancel</button>
+                            <button type="submit" class="btn-primary">Save Item</button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
-            <!-- View: Orders (Full List) -->
-            <div id="view-orders" class="view-section" style="display: none;">
-                <!-- Filter Bar -->
-                <div class="filters-bar">
-                    <div class="filter-group">
-                        <label>Status</label>
-                        <select id="filter-status" onchange="loadOrders()">
-                            <option value="all">All Statuses</option>
-                            <option value="new">New</option>
-                            <option value="confirmed">Confirmed</option>
-                            <option value="in_production">In Production</option>
-                            <option value="packed">Packed</option>
-                            <option value="dispatched">Dispatched</option>
-                            <option value="delivered">Delivered</option>
-                            <option value="cancelled">Cancelled</option>
-                        </select>
+            <!-- Product Modal -->
+            <div id="product-modal" class="modal-overlay">
+                <div class="modal-container">
+                    <div class="modal-header">
+                        <h3 id="product-modal-title">Add New Cookie</h3>
+                        <button class="close-modal" onclick="closeProductModal()">&times;</button>
                     </div>
-                    <div class="filter-group">
-                        <label>Type</label>
-                        <select id="filter-type" onchange="loadOrders()">
-                            <option value="all">All Types</option>
-                            <option value="Retail">Retail</option>
-                            <option value="Corporate">Corporate</option>
-                            <option value="Custom">Custom</option>
-                        </select>
-                    </div>
-                    <button class="btn-primary" onclick="loadOrders()">Refresh</button>
-                </div>
+                    <form id="product-form" onsubmit="event.preventDefault(); saveProduct();">
+                        <input type="hidden" id="product-id"> <!-- Hidden ID for edits -->
+                        <div class="modal-body">
+                            <div class="modal-grid">
+                                <div class="form-group">
+                                    <label>Cookie Name</label>
+                                    <input type="text" id="prod-name" required placeholder="e.g. Classic Choc Chip">
+                                </div>
+                                <div class="form-group">
+                                    <label>Category</label>
+                                    <select id="prod-category">
+                                        <option value="Signature">Signature</option>
+                                        <option value="Seasonal">Seasonal</option>
+                                        <option value="Sugar-Free">Sugar-Free</option>
+                                        <option value="Kids">Kids</option>
+                                        <option value="Gift Box">Gift Box</option>
+                                    </select>
+                                </div>
+                            </div>
 
-                <!-- Orders Table -->
-                <div class="dashboard-panel">
-                    <div class="table-responsive">
-                        <table class="data-table">
+                            <div class="modal-grid">
+                                <div class="form-group">
+                                    <label>Price (₹)</label>
+                                    <input type="number" id="prod-price" required placeholder="350">
+                                </div>
+                                <div class="form-group">
+                                    <label>Pack Size</label>
+                                    <input type="text" id="prod-pack" placeholder="e.g. 250g (approx 6 pcs)">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Short Description</label>
+                                <input type="text" id="prod-short-desc"
+                                    placeholder="A rich, gooey chocolate experience...">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Image URL (Optional)</label>
+                                <input type="text" id="prod-image" placeholder="https://...">
+                                <small style="color:#888;">For now, paste an image link. Upload feature coming
+                                    later.</small>
+                            </div>
+
+                            <div class="form-group" style="display:flex; gap:1.5rem; margin-top:1rem;">
+                                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                                    <input type="checkbox" id="prod-status" checked> Available
+                                </label>
+                                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                                    <input type="checkbox" id="tag-bestseller"> Bestseller Tag
+                                </label>
+                                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                                    <input type="checkbox" id="tag-new"> New Tag
+                                </label>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn-outline" onclick="closeProductModal()">Cancel</button>
+                            <button type="submit" class="btn-primary">Save Cookie</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Order Details Modal -->
+            <div id="order-modal" class="modal-overlay">
+                <div class="modal-container">
+                    <div class="modal-header">
+                        <h3 id="modal-order-id">Order #12345</h3>
+                        <button class="close-modal" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="modal-grid">
+                            <!-- Customer Details -->
+                            <div class="modal-section">
+                                <h4>Customer Details</h4>
+                                <p><strong>Name:</strong> <span id="modal-customer-name">-</span></p>
+                                <p><strong>Phone:</strong> <span id="modal-customer-phone">-</span></p>
+                                <p><strong>Address:</strong> <span id="modal-customer-address">-</span></p>
+                            </div>
+
+                            <!-- Order Info -->
+                            <div class="modal-section">
+                                <h4>Order Info</h4>
+                                <p><strong>Date:</strong> <span id="modal-order-date">-</span></p>
+                                <p><strong>Type:</strong> <span id="modal-order-type">-</span></p>
+                                <div class="form-group" style="margin-top:10px;">
+                                    <label>Status</label>
+                                    <select id="modal-order-status">
+                                        <option value="new">New</option>
+                                        <option value="confirmed">Confirmed</option>
+                                        <option value="in_production">In Production</option>
+                                        <option value="packed">Packed</option>
+                                        <option value="dispatched">Dispatched</option>
+                                        <option value="delivered">Delivered</option>
+                                        <option value="cancelled">Cancelled</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Items Table -->
+                        <h4 style="margin-top:1.5rem; margin-bottom:0.5rem;">Items</h4>
+                        <table class="data-table" style="background:#f9f9f9;">
                             <thead>
                                 <tr>
-                                    <th>Order ID</th>
-                                    <th>Date</th>
-                                    <th>Customer</th>
-                                    <th>Type</th>
-                                    <th>Items</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
+                                    <th>Item</th>
+                                    <th>Qty</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
                                 </tr>
                             </thead>
-                            <tbody id="orders-table-body">
-                                <tr>
-                                    <td colspan="8" class="empty-cell">Loading orders...</td>
-                                </tr>
+                            <tbody id="modal-items-body">
+                                <!-- Items injected here -->
                             </tbody>
-                            Cookie</button>
-                    </div>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" style="text-align:right; font-weight:bold;">Grand Total:</td>
+                                    <td style="font-weight:bold;" id="modal-total-amount">₹0</td>
+                                </tr>
+                            </tfoot>
+                        </table>
 
-                    <div class="dashboard-panel">
-                        <div class="table-responsive">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Image</th>
-                                        <th>Name</th>
-                                        <th>Category</th>
-                                        <th>Pack</th>
-                                        <th>Price</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="products-table-body">
-                                    <tr>
-                                        <td colspan="7" class="empty-cell">Loading products...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <!-- Notes -->
+                        <div class="modal-section" style="margin-top:1.5rem;">
+                            <label><strong>Order Notes:</strong></label>
+                            <p id="modal-notes" style="font-style:italic; color:#666;">-</p>
                         </div>
                     </div>
-                </div>
-
-        </main>
-    </div>
-
-    <!-- Inventory Modal -->
-    <div id="inventory-modal" class="modal-overlay">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h3 id="inv-modal-title">Add Item</h3>
-                <button class="close-modal" onclick="closeInventoryModal()">&times;</button>
-            </div>
-            <form id="inventory-form" onsubmit="event.preventDefault(); saveInventoryItem();">
-                <input type="hidden" id="inv-id">
-                <input type="hidden" id="inv-type"> <!-- 'ingredients' or 'packaging' -->
-
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label>Item Name</label>
-                        <input type="text" id="inv-name" required placeholder="e.g. Sugar">
+                    <div class="modal-footer">
+                        <button class="btn-outline" onclick="closeModal()">Close</button>
+                        <button class="btn-primary" onclick="saveOrderStatus()">Save Changes</button>
                     </div>
-
-                    <div class="modal-grid">
-                        <div class="form-group">
-                            <label>Category/Type</label>
-                            <select id="inv-category">
-                                <!-- Populated dynamically based on type -->
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Supplier (Optional)</label>
-                            <input type="text" id="inv-supplier" placeholder="e.g. Metro">
-                        </div>
-                    </div>
-
-                    <div class="modal-grid">
-                        <div class="form-group">
-                            <label>Current Stock</label>
-                            <div style="display:flex; gap:10px;">
-                                <input type="number" id="inv-stock" required placeholder="0" step="0.01">
-                                <select id="inv-unit" style="width:80px;">
-                                    <option value="kg">kg</option>
-                                    <option value="g">g</option>
-                                    <option value="L">L</option>
-                                    <option value="pcs">pcs</option>
-                                    <option value="packs">packs</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Min Level (Alert)</label>
-                            <input type="number" id="inv-min" required placeholder="5">
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-outline" onclick="closeInventoryModal()">Cancel</button>
-                    <button type="submit" class="btn-primary">Save Item</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Product Modal -->
-    <div id="product-modal" class="modal-overlay">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h3 id="product-modal-title">Add New Cookie</h3>
-                <button class="close-modal" onclick="closeProductModal()">&times;</button>
-            </div>
-            <form id="product-form" onsubmit="event.preventDefault(); saveProduct();">
-                <input type="hidden" id="product-id"> <!-- Hidden ID for edits -->
-                <div class="modal-body">
-                    <div class="modal-grid">
-                        <div class="form-group">
-                            <label>Cookie Name</label>
-                            <input type="text" id="prod-name" required placeholder="e.g. Classic Choc Chip">
-                        </div>
-                        <div class="form-group">
-                            <label>Category</label>
-                            <select id="prod-category">
-                                <option value="Signature">Signature</option>
-                                <option value="Seasonal">Seasonal</option>
-                                <option value="Sugar-Free">Sugar-Free</option>
-                                <option value="Kids">Kids</option>
-                                <option value="Gift Box">Gift Box</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="modal-grid">
-                        <div class="form-group">
-                            <label>Price (₹)</label>
-                            <input type="number" id="prod-price" required placeholder="350">
-                        </div>
-                        <div class="form-group">
-                            <label>Pack Size</label>
-                            <input type="text" id="prod-pack" placeholder="e.g. 250g (approx 6 pcs)">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Short Description</label>
-                        <input type="text" id="prod-short-desc" placeholder="A rich, gooey chocolate experience...">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Image URL (Optional)</label>
-                        <input type="text" id="prod-image" placeholder="https://...">
-                        <small style="color:#888;">For now, paste an image link. Upload feature coming later.</small>
-                    </div>
-
-                    <div class="form-group" style="display:flex; gap:1.5rem; margin-top:1rem;">
-                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-                            <input type="checkbox" id="prod-status" checked> Available
-                        </label>
-                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-                            <input type="checkbox" id="tag-bestseller"> Bestseller Tag
-                        </label>
-                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-                            <input type="checkbox" id="tag-new"> New Tag
-                        </label>
-                    </div>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-outline" onclick="closeProductModal()">Cancel</button>
-                    <button type="submit" class="btn-primary">Save Cookie</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Order Details Modal -->
-    <div id="order-modal" class="modal-overlay">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h3 id="modal-order-id">Order #12345</h3>
-                <button class="close-modal" onclick="closeModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="modal-grid">
-                    <!-- Customer Details -->
-                    <div class="modal-section">
-                        <h4>Customer Details</h4>
-                        <p><strong>Name:</strong> <span id="modal-customer-name">-</span></p>
-                        <p><strong>Phone:</strong> <span id="modal-customer-phone">-</span></p>
-                        <p><strong>Address:</strong> <span id="modal-customer-address">-</span></p>
-                    </div>
-
-                    <!-- Order Info -->
-                    <div class="modal-section">
-                        <h4>Order Info</h4>
-                        <p><strong>Date:</strong> <span id="modal-order-date">-</span></p>
-                        <p><strong>Type:</strong> <span id="modal-order-type">-</span></p>
-                        <div class="form-group" style="margin-top:10px;">
-                            <label>Status</label>
-                            <select id="modal-order-status">
-                                <option value="new">New</option>
-                                <option value="confirmed">Confirmed</option>
-                                <option value="in_production">In Production</option>
-                                <option value="packed">Packed</option>
-                                <option value="dispatched">Dispatched</option>
-                                <option value="delivered">Delivered</option>
-                                <option value="cancelled">Cancelled</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Items Table -->
-                <h4 style="margin-top:1.5rem; margin-bottom:0.5rem;">Items</h4>
-                <table class="data-table" style="background:#f9f9f9;">
-                    <thead>
-                        <tr>
-                            <th>Item</th>
-                            <th>Qty</th>
-                            <th>Price</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody id="modal-items-body">
-                        <!-- Items injected here -->
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="3" style="text-align:right; font-weight:bold;">Grand Total:</td>
-                            <td style="font-weight:bold;" id="modal-total-amount">₹0</td>
-                        </tr>
-                    </tfoot>
-                </table>
-
-                <!-- Notes -->
-                <div class="modal-section" style="margin-top:1.5rem;">
-                    <label><strong>Order Notes:</strong></label>
-                    <p id="modal-notes" style="font-style:italic; color:#666;">-</p>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn-outline" onclick="closeModal()">Close</button>
-                <button class="btn-primary" onclick="saveOrderStatus()">Save Changes</button>
-            </div>
-        </div>
-    </div>
 
-    <!-- Scripts -->
-    <script src="js/firebase-config.js"></script>
-    <script src="js/admin.js"></script>
+            <!-- Scripts -->
+            <script src="js/firebase-config.js"></script>
+            <script src="js/admin.js"></script>
 </body>
 
 </html>
