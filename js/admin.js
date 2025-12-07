@@ -61,7 +61,9 @@ function showLogin() {
     if (loginScreen) loginScreen.style.display = 'flex';
 }
 
-function switchView(viewId) {
+function switchView(viewId, event) {
+    if (event) event.preventDefault();
+
     document.querySelectorAll('.view-section').forEach(el => el.style.display = 'none');
     document.querySelectorAll('.sidebar-nav a').forEach(el => el.classList.remove('active'));
 

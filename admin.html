@@ -43,13 +43,15 @@
                 <h3>Gentleman's<br>Bakehouse</h3>
             </div>
             <nav class="sidebar-nav">
-                <a href="#" class="active" onclick="switchView('overview')"><i class="fas fa-home"></i> Dashboard</a>
-                <a href="#" onclick="switchView('orders')"><i class="fas fa-shopping-bag"></i> Orders</a>
-                <a href="#" onclick="switchView('inventory')"><i class="fas fa-boxes"></i> Inventory</a>
-                <a href="#" onclick="switchView('products')"><i class="fas fa-cookie"></i> Products</a>
-                <a href="#" onclick="switchView('corporate')"><i class="fas fa-building"></i> Corporate Orders</a>
-                <a href="#" onclick="switchView('customers')"><i class="fas fa-users"></i> Customers</a>
-                <a href="#" onclick="switchView('settings')"><i class="fas fa-cog"></i> Settings</a>
+                <a href="#" class="active" onclick="switchView('overview', event)"><i class="fas fa-home"></i>
+                    Dashboard</a>
+                <a href="#" onclick="switchView('orders', event)"><i class="fas fa-shopping-bag"></i> Orders</a>
+                <a href="#" onclick="switchView('inventory', event)"><i class="fas fa-boxes"></i> Inventory</a>
+                <a href="#" onclick="switchView('products', event)"><i class="fas fa-cookie"></i> Products</a>
+                <a href="#" onclick="switchView('corporate', event)"><i class="fas fa-building"></i> Corporate
+                    Orders</a>
+                <a href="#" onclick="switchView('customers', event)"><i class="fas fa-users"></i> Customers</a>
+                <a href="#" onclick="switchView('settings', event)"><i class="fas fa-cog"></i> Settings</a>
             </nav>
             <div class="logout-area">
                 <button onclick="logout()" class="btn-outline"><i class="fas fa-sign-out-alt"></i> Logout</button>
