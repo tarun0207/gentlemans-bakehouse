@@ -188,6 +188,153 @@ function printBakeList() {
     window.print();
 }
 
-function viewOrder(docId) {
-    alert("View Order details feature coming soon! ID: " + docId);
+// Order Management Logic
+let currentOrderId = null; // Track currently open order
+
+async function loadOrders() {
+    console.log("Loading all orders with filters...");
+    const statusFilter = document.getElementById('filter-status').value;
+    const typeFilter = document.getElementById('filter-type').value;
+    const tbody = document.getElementById('orders-table-body');
+
+    if (!tbody) return; // Not on view-orders?
+
+    tbody.innerHTML = '<tr><td colspan="8" class="empty-cell">Loading...</td></tr>';
+
+    try {
+        let query = db.collection('orders').orderBy('createdAt', 'desc');
+
+        // Apply filters (Client-side filtering for simplicity if composite indexes missing)
+        // Ideally we use .where() clauses but that requires indexes for each combo.
+        // For < 1000 orders, client side is fine.
+
+        const snapshot = await query.limit(50).get(); // Limit 50 for performance
+
+        tbody.innerHTML = '';
+
+        if (snapshot.empty) {
+            tbody.innerHTML = '<tr><td colspan="8" class="empty-cell">No orders found.</td></tr>';
+            return;
+        }
+
+        snapshot.forEach(doc => {
+            const order = doc.data();
+
+            // Filter Match Check
+            if (statusFilter !== 'all' && order.status !== statusFilter) return;
+            if (typeFilter !== 'all' && (order.type || 'Retail') !== typeFilter) return;
+
+            // Simplify Items string
+            let itemsSummary = order.items ? order.items.map(i => `${i.qty}x ${i.name.split(' ').slice(-2).join(' ')}`).join(', ') : 'No items';
+            if (itemsSummary.length > 30) itemsSummary = itemsSummary.substring(0, 30) + '...';
+
+            const dateStr = order.createdAt ? order.createdAt.toDate().toLocaleDateString() : '-';
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>#${order.orderId ? order.orderId.slice(-6) : '...'}</td>
+                <td>${dateStr}</td>
+                <td>${order.customerName}<br><small>${order.phone || ''}</small></td>
+                <td>${order.type || 'Retail'}</td>
+                <td><small>${itemsSummary}</small></td>
+                <td>₹${order.totalAmount}</td>
+                <td><span class="status-badge status-${order.status || 'new'}">${order.status || 'New'}</span></td>
+                <td>
+                    <button class="btn-small" onclick="viewOrder('${doc.id}')"><i class="fas fa-eye"></i></button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+    } catch (e) {
+        console.error("Load orders error:", e);
+        tbody.innerHTML = `<tr><td colspan="8" class="empty-cell">Error loading orders: ${e.message}</td></tr>`;
+    }
+}
+
+async function viewOrder(docId) {
+    currentOrderId = docId;
+    const modal = document.getElementById('order-modal');
+
+    // Show spinner or loading state if needed
+
+    try {
+        const doc = await db.collection('orders').doc(docId).get();
+        if (!doc.exists) {
+            alert("Order not found!");
+            return;
+        }
+
+        const order = doc.data();
+
+        // Populate Modal
+        document.getElementById('modal-order-id').textContent = 'Order #' + (order.orderId || doc.id);
+        document.getElementById('modal-customer-name').textContent = order.customerName || '-';
+        document.getElementById('modal-customer-phone').textContent = order.phone || '-';
+        document.getElementById('modal-customer-address').textContent = order.address || '-';
+
+        document.getElementById('modal-order-date').textContent = order.createdAt ? order.createdAt.toDate().toLocaleString() : '-';
+        document.getElementById('modal-order-type').textContent = order.type || 'Retail';
+        document.getElementById('modal-order-status').value = order.status || 'new';
+        document.getElementById('modal-notes').textContent = order.notes || 'No notes.';
+
+        // Items
+        const itemsBody = document.getElementById('modal-items-body');
+        itemsBody.innerHTML = '';
+        if (order.items) {
+            order.items.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${item.qty}</td>
+                    <td>₹${item.price}</td>
+                    <td>₹${item.price * item.qty}</td>
+                `;
+                itemsBody.appendChild(tr);
+            });
+        }
+
+        document.getElementById('modal-total-amount').textContent = '₹' + order.totalAmount;
+
+        // Show Modal
+        modal.style.display = 'flex';
+
+    } catch (e) {
+        alert("Error fetching order details: " + e.message);
+    }
+}
+
+function closeModal() {
+    document.getElementById('order-modal').style.display = 'none';
+    currentOrderId = null;
+}
+
+function saveOrderStatus() {
+    if (!currentOrderId) return;
+
+    const newStatus = document.getElementById('modal-order-status').value;
+    const btn = document.querySelector('#order-modal .btn-primary');
+    const originalText = btn.textContent;
+    btn.textContent = "Saving...";
+
+    db.collection('orders').doc(currentOrderId).update({
+        status: newStatus
+    }).then(() => {
+        alert("Status updated!");
+        closeModal();
+        loadOrders(); // Refresh table
+        loadDashboardData(); // Refresh dashboard if open
+    }).catch(e => {
+        alert("Error updating: " + e.message);
+    }).finally(() => {
+        btn.textContent = originalText;
+    });
+}
+
+// Global click to close modal
+window.onclick = function (event) {
+    const modal = document.getElementById('order-modal');
+    if (event.target == modal) {
+        closeModal();
+    }
 }
