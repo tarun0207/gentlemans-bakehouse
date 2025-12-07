@@ -56,17 +56,92 @@ function showDashboard() {
     if (dashboardApp) dashboardApp.style.display = 'flex';
 }
 
+function showLogin() {
+    if (dashboardApp) dashboardApp.style.display = 'none';
+    if (loginScreen) loginScreen.style.display = 'flex';
+}
+
+function switchView(viewId) {
+    document.querySelectorAll('.view-section').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.sidebar-nav a').forEach(el => el.classList.remove('active'));
+
+    const target = document.getElementById(`view-${viewId}`);
+    if (target) {
+        target.style.display = 'block';
+    }
+
+    // Highlight nav (simple approximation)
+    const navLink = document.querySelector(`.sidebar-nav a[onclick*="${viewId}"]`);
+    if (navLink) navLink.classList.add('active');
+
+    // Auto-load data for specific views
+    if (viewId === 'orders') loadOrders();
+    if (viewId === 'products') loadProducts();
+}
+
+// Data Loading Logic (Dashboard Overview)
+async function loadDashboardData() {
+    console.log("Loading dashboard data...");
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    try {
+        const ordersSnapshot = await db.collection('orders')
+            .orderBy('createdAt', 'desc')
+            .limit(20)
+            .get();
+
+        let todayCount = 0;
+        let productionCount = 0;
+        let dispatchCount = 0;
+        let weeklyRevenue = 0;
+        let bakeList = {};
+
+        const recentOrdersBody = document.getElementById('recent-orders-body');
+        if (recentOrdersBody) recentOrdersBody.innerHTML = '';
+
+        ordersSnapshot.forEach(doc => {
+            const order = doc.data();
+            const orderDate = order.createdAt ? order.createdAt.toDate() : new Date();
+            const isToday = orderDate >= today;
+
+            if (isToday) todayCount++;
+            if (order.status === 'in_production') productionCount++;
+            if (order.status === 'pending' || order.status === 'confirmed') dispatchCount++;
+
+            if (order.totalAmount) weeklyRevenue += order.totalAmount;
+
+            if (['pending', 'confirmed'].includes(order.status)) {
+                if (order.items && Array.isArray(order.items)) {
+                    order.items.forEach(item => {
+                        if (!bakeList[item.name]) {
+                            bakeList[item.name] = { qty: 0, orders: 0, orderIds: new Set() };
+                        }
+                        bakeList[item.name].qty += item.qty;
+                        bakeList[item.name].orderIds.add(order.orderId);
+                    });
+                }
+            }
+
+            if (recentOrdersBody) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>#${order.orderId ? order.orderId.slice(-6) : 'N/A'}</td>
+                    <td>${order.customerName}</td>
+                    <td>${order.type || 'Retail'}</td>
                     <td>₹${order.totalAmount}</td>
                     <td><span class="status-badge status-${order.status || 'new'}">${order.status || 'New'}</span></td>
                     <td>
                         <button class="btn-small" onclick="viewOrder('${doc.id}')"><i class="fas fa-eye"></i></button>
                         ${order.status === 'pending' ? `<button class="btn-small" onclick="updateStatus('${doc.id}', 'confirmed')"><i class="fas fa-check"></i></button>` : ''}
                     </td>
-`;
+                `;
                 recentOrdersBody.appendChild(tr);
             }
         });
 
+        // Convert bake list sets to counts
         Object.keys(bakeList).forEach(key => {
             bakeList[key].orders = bakeList[key].orderIds.size;
         });
@@ -97,10 +172,10 @@ function renderBakeList(list) {
     keys.forEach(key => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-    < td > ${ key }</td >
+            <td>${key}</td>
             <td style="font-weight:700">${list[key].qty} boxes</td>
             <td>${list[key].orders} orders</td>
-`;
+        `;
         container.appendChild(tr);
     });
 }
@@ -119,7 +194,7 @@ function printBakeList() {
 }
 
 // Order Management Logic
-let currentOrderId = null; // Track currently open order
+let currentOrderId = null;
 
 async function loadOrders() {
     console.log("Loading all orders with filters...");
@@ -127,18 +202,14 @@ async function loadOrders() {
     const typeFilter = document.getElementById('filter-type').value;
     const tbody = document.getElementById('orders-table-body');
 
-    if (!tbody) return; // Not on view-orders?
+    if (!tbody) return;
 
     tbody.innerHTML = '<tr><td colspan="8" class="empty-cell">Loading...</td></tr>';
 
     try {
         let query = db.collection('orders').orderBy('createdAt', 'desc');
 
-        // Apply filters (Client-side filtering for simplicity if composite indexes missing)
-        // Ideally we use .where() clauses but that requires indexes for each combo.
-        // For < 1000 orders, client side is fine.
-
-        const snapshot = await query.limit(50).get(); // Limit 50 for performance
+        const snapshot = await query.limit(50).get();
 
         tbody.innerHTML = '';
 
@@ -150,19 +221,18 @@ async function loadOrders() {
         snapshot.forEach(doc => {
             const order = doc.data();
 
-            // Filter Match Check
+            // Client-side Filter
             if (statusFilter !== 'all' && order.status !== statusFilter) return;
             if (typeFilter !== 'all' && (order.type || 'Retail') !== typeFilter) return;
 
-            // Simplify Items string
-            let itemsSummary = order.items ? order.items.map(i => `${ i.qty }x ${ i.name.split(' ').slice(-2).join(' ') } `).join(', ') : 'No items';
+            let itemsSummary = order.items ? order.items.map(i => `${i.qty}x ${i.name.split(' ').slice(-2).join(' ')}`).join(', ') : 'No items';
             if (itemsSummary.length > 30) itemsSummary = itemsSummary.substring(0, 30) + '...';
 
             const dateStr = order.createdAt ? order.createdAt.toDate().toLocaleDateString() : '-';
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
-    < td > #${ order.orderId ? order.orderId.slice(-6) : '...' }</td >
+                <td>#${order.orderId ? order.orderId.slice(-6) : '...'}</td>
                 <td>${dateStr}</td>
                 <td>${order.customerName}<br><small>${order.phone || ''}</small></td>
                 <td>${order.type || 'Retail'}</td>
@@ -172,21 +242,19 @@ async function loadOrders() {
                 <td>
                     <button class="btn-small" onclick="viewOrder('${doc.id}')"><i class="fas fa-eye"></i></button>
                 </td>
-`;
+            `;
             tbody.appendChild(tr);
         });
 
     } catch (e) {
         console.error("Load orders error:", e);
-        tbody.innerHTML = `< tr > <td colspan="8" class="empty-cell">Error loading orders: ${e.message}</td></tr > `;
+        tbody.innerHTML = `<tr><td colspan="8" class="empty-cell">Error loading orders: ${e.message}</td></tr>`;
     }
 }
 
 async function viewOrder(docId) {
     currentOrderId = docId;
     const modal = document.getElementById('order-modal');
-
-    // Show spinner or loading state if needed
 
     try {
         const doc = await db.collection('orders').doc(docId).get();
@@ -197,7 +265,6 @@ async function viewOrder(docId) {
 
         const order = doc.data();
 
-        // Populate Modal
         document.getElementById('modal-order-id').textContent = 'Order #' + (order.orderId || doc.id);
         document.getElementById('modal-customer-name').textContent = order.customerName || '-';
         document.getElementById('modal-customer-phone').textContent = order.phone || '-';
@@ -208,25 +275,22 @@ async function viewOrder(docId) {
         document.getElementById('modal-order-status').value = order.status || 'new';
         document.getElementById('modal-notes').textContent = order.notes || 'No notes.';
 
-        // Items
         const itemsBody = document.getElementById('modal-items-body');
         itemsBody.innerHTML = '';
         if (order.items) {
             order.items.forEach(item => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-    < td > ${ item.name }</td >
+                    <td>${item.name}</td>
                     <td>${item.qty}</td>
                     <td>₹${item.price}</td>
                     <td>₹${item.price * item.qty}</td>
-`;
+                `;
                 itemsBody.appendChild(tr);
             });
         }
 
         document.getElementById('modal-total-amount').textContent = '₹' + order.totalAmount;
-
-        // Show Modal
         modal.style.display = 'flex';
 
     } catch (e) {
@@ -252,8 +316,8 @@ function saveOrderStatus() {
     }).then(() => {
         alert("Status updated!");
         closeModal();
-        loadOrders(); // Refresh table
-        loadDashboardData(); // Refresh dashboard if open
+        loadOrders();
+        loadDashboardData();
     }).catch(e => {
         alert("Error updating: " + e.message);
     }).finally(() => {
@@ -264,7 +328,137 @@ function saveOrderStatus() {
 // Global click to close modal
 window.onclick = function (event) {
     const modal = document.getElementById('order-modal');
-    if (event.target == modal) {
-        closeModal();
+    const prodModal = document.getElementById('product-modal');
+    if (event.target == modal) closeModal();
+    if (event.target == prodModal) closeProductModal();
+}
+
+// Product Management Logic
+let currentProductId = null;
+
+async function loadProducts() {
+    const tbody = document.getElementById('products-table-body');
+    if (!tbody) return;
+
+    tbody.innerHTML = '<tr><td colspan="7" class="empty-cell">Loading products...</td></tr>';
+
+    try {
+        const snapshot = await db.collection('products').get();
+        tbody.innerHTML = '';
+
+        if (snapshot.empty) {
+            tbody.innerHTML = '<tr><td colspan="7" class="empty-cell">No products found. Add one!</td></tr>';
+            return;
+        }
+
+        snapshot.forEach(doc => {
+            const prod = doc.data();
+            const tr = document.createElement('tr');
+
+            const thumb = prod.image || 'https://via.placeholder.com/50';
+            const statusClass = prod.status ? 'status-delivered' : 'status-in_production';
+            const statusText = prod.status ? 'Active' : 'Disabled';
+
+            tr.innerHTML = `
+                <td><img src="${thumb}" class="product-thumb"></td>
+                <td><strong>${prod.name}</strong><br><small>${prod.shortDesc || ''}</small></td>
+                <td>${prod.category}</td>
+                <td>${prod.packSize || '-'}</td>
+                <td>₹${prod.price}</td>
+                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                <td>
+                    <button class="table-action-btn" onclick="editProduct('${doc.id}')"><i class="fas fa-edit"></i></button>
+                    <button class="table-action-btn delete" onclick="toggleProductStatus('${doc.id}', ${!prod.status})"><i class="fas fa-power-off"></i></button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+    } catch (e) {
+        console.error("Load products error:", e);
+        tbody.innerHTML = `<tr><td colspan="7" class="empty-cell">Error: ${e.message}</td></tr>`;
+    }
+}
+
+function openProductModal() {
+    currentProductId = null;
+    document.getElementById('product-form').reset();
+    document.getElementById('product-modal-title').textContent = "Add New Cookie";
+    document.getElementById('product-modal').style.display = 'flex';
+}
+
+function closeProductModal() {
+    document.getElementById('product-modal').style.display = 'none';
+}
+
+async function editProduct(docId) {
+    currentProductId = docId;
+    try {
+        const doc = await db.collection('products').doc(docId).get();
+        if (!doc.exists) return;
+
+        const data = doc.data();
+        document.getElementById('product-modal-title').textContent = "Edit " + data.name;
+
+        document.getElementById('prod-name').value = data.name || '';
+        document.getElementById('prod-category').value = data.category || 'Signature';
+        document.getElementById('prod-price').value = data.price || '';
+        document.getElementById('prod-pack').value = data.packSize || '';
+        document.getElementById('prod-short-desc').value = data.shortDesc || '';
+        document.getElementById('prod-image').value = data.image || '';
+        document.getElementById('prod-status').checked = data.status !== false;
+
+        // Tags
+        document.getElementById('tag-bestseller').checked = (data.tags || []).includes('bestseller');
+        document.getElementById('tag-new').checked = (data.tags || []).includes('new');
+
+        document.getElementById('product-modal').style.display = 'flex';
+    } catch (e) {
+        alert("Error loading product: " + e.message);
+    }
+}
+
+async function saveProduct() {
+    const btn = document.querySelector('#product-modal .btn-primary');
+    btn.textContent = "Saving...";
+
+    const data = {
+        name: document.getElementById('prod-name').value,
+        category: document.getElementById('prod-category').value,
+        price: Number(document.getElementById('prod-price').value),
+        packSize: document.getElementById('prod-pack').value,
+        shortDesc: document.getElementById('prod-short-desc').value,
+        image: document.getElementById('prod-image').value,
+        status: document.getElementById('prod-status').checked,
+        tags: [],
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    if (document.getElementById('tag-bestseller').checked) data.tags.push('bestseller');
+    if (document.getElementById('tag-new').checked) data.tags.push('new');
+
+    try {
+        if (currentProductId) {
+            await db.collection('products').doc(currentProductId).update(data);
+        } else {
+            data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+            await db.collection('products').add(data);
+        }
+        closeProductModal();
+        loadProducts();
+    } catch (e) {
+        alert("Error saving: " + e.message);
+    } finally {
+        btn.textContent = "Save Cookie";
+    }
+}
+
+async function toggleProductStatus(docId, newStatus) {
+    if (!confirm("Change status?")) return;
+    try {
+        await db.collection('products').doc(docId).update({ status: newStatus });
+        loadProducts();
+    } catch (e) {
+        alert("Error: " + e.message);
     }
 }
