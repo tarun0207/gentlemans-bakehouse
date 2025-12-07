@@ -312,7 +312,7 @@ function closeModal() {
 function saveOrderStatus() {
     if (!currentOrderId) return;
 
-    const newStatus = document.getElementById('modal-order-status').value;
+    const newStatus = document.getElementById('modal-status').value;
     const btn = document.querySelector('#order-modal .btn-primary');
     const originalText = btn.textContent;
     btn.textContent = "Saving...";
